@@ -1,3 +1,7 @@
+### pygame template by Lukas Peraza
+### https://qwewy.gitbooks.io/pygame-module-manual/chapter1/framework.html
+### collaborated with @lukez1
+
 import pygame
 import random 
 
@@ -9,20 +13,13 @@ class Character(pygame.sprite.Sprite):
         self.height = 400
         self.health = 100
         self.speed = self.width/30
-        self.jumpSpeed = self.height/5
-        self.attackSpeed = self.width/60
-        self.fallSpeed = self.jumpSpeed/30
         self.state = "startMode"
-        self.characterX = int(self.width/15)
-        self.characterY = int(self.height/8)
-        self.sphereRad = int(self.width/40)
         self.posX = self.width/6
         self.posY = 215 * self.height/400
         self.time = 0
         self.bullets = []
         self.screen = screen
         self.lives = 3
-        self.health = 0
         self.spriteSize = 64
         self.vel = 7
         self.isJump = False
