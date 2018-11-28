@@ -1,3 +1,7 @@
+### pygame template by Lukas Peraza
+### https://qwewy.gitbooks.io/pygame-module-manual/chapter1/framework.html
+### collaborated with @lukez1
+
 import pygame
 import random 
 
@@ -9,20 +13,13 @@ class Character(pygame.sprite.Sprite):
         self.height = 400
         self.health = 100
         self.speed = self.width/30
-        self.jumpSpeed = self.height/5
-        self.attackSpeed = self.width/60
-        self.fallSpeed = self.jumpSpeed/30
         self.state = "startMode"
-        self.characterX = int(self.width/15)
-        self.characterY = int(self.height/8)
-        self.sphereRad = int(self.width/40)
         self.posX = self.width/6
         self.posY = 215 * self.height/400
         self.time = 0
         self.bullets = []
         self.screen = screen
         self.lives = 3
-        self.health = 0
         self.spriteSize = 64
         self.vel = 7
         self.isJump = False
@@ -191,7 +188,6 @@ class States(object):
 class Menu(States):
     def __init__(self):
         States.__init__(self)
-        self.auraSpheres = pygame.sprite.Group()
         self.width = 600
         self.height = 400
         self.time = 0
@@ -201,7 +197,7 @@ class Menu(States):
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.endScreen = pygame.image.load("images/gameOver.png")
         self.endScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
-        self.playScreen = pygame.image.load("images/startScene.jpg")
+        self.playScreen = pygame.image.load("images/waternation.jpg")
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
         self.player = Aang(self.screen)
         self.opponent = Zuko(self.screen)
