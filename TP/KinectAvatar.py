@@ -175,190 +175,6 @@ class States(object):
        self.previous = None
        self.gameMode = "startMode"
 
-class Menu(States):
-    def __init__(self):
-        States.__init__(self)
-        self.auraSpheres = pygame.sprite.Group()
-        self.width = 600
-        self.height = 400
-        self.state = "startMode"
-        self.startScreen = pygame.image.load("images/start.png")
-        self.startScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
-        self.time = 0
-        self.screen = pygame.display.set_mode((self.width, self.height))
-        self.playScreen = pygame.image.load("images/startScene.jpg")
-        self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
-        self.player = Aang(self.screen)
-        self.opponent = Zuko(self.screen)
-        self.bottom = BottomBounds(self.width, self.height)
-        self.gameOver = False
-       
-    def cleanup(self):
-       print('cleaning up Menu state stuff')
-    def startup(self):
-       print('starting Menu state stuff')
-    def get_event(self, event):
-        if self.state == "startMode":
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                self.state = "gameMode"
-
-        if self.state == "gameMode":        
-            if event.type == pygame.KEYDOWN:
-                if self.player.rightPlayerWalk == True: 
-                    dir = 1
-                else:
-                    dir = -1
-                    
-                if event.key == pygame.K_LEFT and  self.player.posX > 0 :
-                    self.player.posX -= self.player.vel
-                    self.player.leftPlayerWalk = True
-                    self.player.rightPlayerWalk = False
-                    self.player.standing = False
-                    
-                if event.key == pygame.K_RIGHT and self.player.posX < self.width - self.player.spriteSize:
-                    self.player.posX += self.player.vel   
-                    self.player.leftPlayerWalk = False
-                    self.player.rightPlayerWalk = True
-                    self.player.standing = False
-                else:
-                    self.player.standing = True
-            
-                if not(self.player.isJump): #doesn't allow you to move up/down if jumping or jump again if jumping
-                    if event.key == pygame.K_UP and self.player.posX > 0 and self.player.posX <= self.width - self.player.spriteSize:
-                        self.player.isJump = True
-                        self.player.standing = True
-                
-                if event.key == pygame.K_a and  self.opponent.posX > 0 :
-                    self.opponent.posX -= self.opponent.vel
-                    self.opponent.leftPlayerWalk = True
-                    self.opponent.rightPlayerWalk = False
-                    self.opponent.standing = False
-                    
-                if event.key == pygame.K_d and self.opponent.posX < self.width - self.opponent.spriteSize:
-                    self.opponent.posX += self.opponent.vel   
-                    self.opponent.leftPlayerWalk = False
-                    self.opponent.rightPlayerWalk = True
-                    self.opponent.standing = False
-                else:
-                    self.opponent.standing = True
-            
-                if not(self.opponent.isJump): #doesn't allow you to move up/down if jumping or jump again if jumping
-                    if event.key == pygame.K_w and self.opponent.posX > 0 and self.opponent.posX <= self.width - self.opponent.spriteSize:
-                        self.opponent.isJump = True
-                        self.opponent.standing = True
-                if event.key == pygame.K_r:
-                    self.state = "startMode"
-                        
-    def timerFired(self):
-        if self.gameOver == False:
-            self.player.time += 1
-            self.opponent.time += 1
-            if self.player.isJump: #when jumping
-                if self.player.jumpCount >= -10: 
-                    print('up')
-                    neg = 1 #start moving up 
-                    if self.player.jumpCount < 0:
-                        neg = -1 # moving down in the parabola
-                    #makes a quadratic parabola to illustrate diff speeds
-                    #0.5 scales the jump smaller 
-                    self.player.posY -= 0.5 * (self.player.jumpCount ** 2) * neg 
-                    self.player.jumpCount -= 1 #change heights
-                else:
-                    self.player.isJump = False
-                    self.player.jumpCount = 10
-                    
-            if self.opponent.isJump: #when jumping
-                if self.opponent.jumpCount >= -10: 
-                    print('up')
-                    neg = 1 #start moving up 
-                    if self.opponent.jumpCount < 0:
-                        neg = -1 # moving down in the parabola
-                    #makes a quadratic parabola to illustrate diff speeds
-                    #0.5 scales the jump smaller 
-                    self.opponent.posY -= 0.5 * (self.opponent.jumpCount ** 2) * neg 
-                    self.opponent.jumpCount -= 1 #change heights
-                else:
-                    self.opponent.isJump = False
-                    self.opponent.jumpCount = 10
-            
-            if self.bottom.collidesWithChar(self.player) == False:
-                self.player.posY+=self.player.time * 9.8/100
-                self.opponent.posY += self.opponent.time * 9.8/100
-        else:
-            return
-
-    def update(self, screen, dt):
-        self.draw(screen)
-    def draw(self, screen):
-        if self.state == "startMode":
-            screen.blit(self.startScreen,(0,0))
-        elif self.state == "gameMode":
-           
-            screen.blit(self.playScreen,(0,0))
-            pygame.init()
-                
-            if self.gameOver == True:
-                pygame.init()
-            
-                
-            pygame.display.update()
-            self.bottom.draw(self.screen)
-            self.player.draw()
-            self.opponent.draw()
-            self.timerFired()
-
-
-class Game(States):
-   def __init__(self):
-       States.__init__(self)
-       self.next = 'menu'
-   def cleanup(self):
-        print('cleaning up Game state stuff')
-   def startup(self):
-       print('starting Game state stuff')
-   def get_event(self, event):
-        pass
-   def update(self, screen, dt):
-        self.draw(screen)
-   def draw(self, screen):
-        print (self.state)
-
-class Control:
-   def __init__(self, **settings):
-       self.__dict__.update(settings)
-       self.done = False
-       self.screen = pygame.display.set_mode(self.size)
-       self.clock = pygame.time.Clock()
-   def setup_states(self, state_dict, start_state):
-       self.state_dict = state_dict
-       self.state_name = start_state
-       self.state = self.state_dict[self.state_name]
-   def flip_state(self):
-       self.state.done = False
-       previous,self.state_name = self.state_name, self.state.next
-       self.state.cleanup()
-       self.state = self.state_dict[self.state_name]
-       self.state.startup()
-       self.state.previous = previous
-   def update(self, dt):
-       if self.state.quit:
-           self.done = True
-       elif self.state.done:
-           self.flip_state()
-       self.state.update(self.screen, dt)
-   def event_loop(self):
-       for event in pygame.event.get():
-           if event.type == pygame.QUIT:
-               self.done = True
-           self.state.get_event(event)
-   def main_game_loop(self):
-       while not self.done:
-           delta_time = self.clock.tick(self.fps)/1000.0
-           self.event_loop()
-           self.update(delta_time)
-           pygame.display.update()
-
-
 
 
 # colors for drawing different bodies 
@@ -503,13 +319,8 @@ class BodyGameRuntime(object):
        
             
     def fireBend(self, joints, jointPoints, rad): 
-        #make 20 random circles around your hands to "bend"
         bendList = []
-        # for i in range(20):
-        #     #right and left hands are in the same place
-        #     pos = random.randint(PyKinectV2.JointType_HandRight, PyKinectV2.JointType_HandRight)
-        #     bendList.append((joints, jointPoints, pygame.color.THECOLORS["red"], pos))
-    
+
         if self.timerStart % 10 == 0:
             self.rad += 10
         
@@ -520,9 +331,6 @@ class BodyGameRuntime(object):
         self.change = (self.prevLHY - self.leftHY) + (self.prevRHY - self.rightHY)
         if math.isnan(self.change) or self.change < 0:
             self.change = 0
-        # self.drawLine(self.leftHX, self.prevLHY, self.rightHX, self.rightHY, pygame.color.THECOLORS["red"])
-        # self.drawLine(self.leftHX, self.leftHY,screenWidth, screenHeight, pygame.color.THECOLORS["red"])
-        # print('wattterrr')
         self.prevLHY = self.leftHY
         self.prevRHY = self.prevRHY
         
@@ -560,6 +368,26 @@ class BodyGameRuntime(object):
                 draw_skeletons(skeletons)
             pygame.display.update()
 
+    def get_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_a and  self.opponent.posX > 0 :
+                self.opponent.posX -= self.opponent.vel
+                self.opponent.leftPlayerWalk = True
+                self.opponent.rightPlayerWalk = False
+                self.opponent.standing = False
+                
+            if event.key == pygame.K_d and self.opponent.posX < self.width - self.opponent.spriteSize:
+                self.opponent.posX += self.opponent.vel   
+                self.opponent.leftPlayerWalk = False
+                self.opponent.rightPlayerWalk = True
+                self.opponent.standing = False
+            else:
+                self.opponent.standing = True
+        
+            if not(self.opponent.isJump): #doesn't allow you to move up/down if jumping or jump again if jumping
+                if event.key == pygame.K_w and self.opponent.posX > 0 and self.opponent.posX <= self.width - self.opponent.spriteSize:
+                    self.opponent.isJump = True
+                    self.opponent.standing = True
 
     def run(self): 
         while not self._done:
@@ -670,6 +498,9 @@ class BodyGameRuntime(object):
                 self.player.draw()
                 self.opponent.draw()
             print('posX', self.player.posX)
+            
+            for event in pygame.event.get():
+                self.get_event(event)
             
             pygame.display.update()
 
