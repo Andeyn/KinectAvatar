@@ -144,7 +144,10 @@ class aangHealthBar(object):
         self.height = height
         self.color = (255, 0, 0)
         self.score = 0
-        
+        self.x = self.x + self.score
+        self.width =  self.width - self.score
+        self.bulCount = 0
+
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x + self.score, self.y, self.width - self.score, self.height))
 
@@ -156,7 +159,9 @@ class zukoHealthBar(object):
         self.height = height
         self.color = (255, 255, 0)
         self.score = 0
-        
+        self.width = self.width - self.score
+        self.bulCount = 0
+
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x , self.y, self.width - self.score, self.height))
 
@@ -171,6 +176,7 @@ class Bullet(object):
         speed = random.randint(3, 10)
         self.vel = speed * self.dir #speed of bullet
         self.bulletList = []
+        
     def draw(self, win):
         pygame.draw.circle(win, self.color, (int(self.x), int(self.y)), self.rad)
         
@@ -188,11 +194,13 @@ class Menu(States):
         self.auraSpheres = pygame.sprite.Group()
         self.width = 600
         self.height = 400
+        self.time = 0
         self.state = "startMode"
         self.startScreen = pygame.image.load("images/start.png")
         self.startScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
-        self.time = 0
         self.screen = pygame.display.set_mode((self.width, self.height))
+        self.endScreen = pygame.image.load("images/gameOver.png")
+        self.endScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
         self.playScreen = pygame.image.load("images/startScene.jpg")
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
         self.player = Aang(self.screen)
@@ -203,7 +211,6 @@ class Menu(States):
         self.gameOver = False
         self.aangBulletList = []
         self.zukoBulletList = []
-       
     def cleanup(self):
        print('cleaning up Menu state stuff')
     def startup(self):
@@ -279,8 +286,9 @@ class Menu(States):
                 bulA.x += bulA.vel
                 if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x):
                     print('hit')
+                    self.zukoHealthBar.bulCount += 1
                     self.aangBulletList.pop(self.aangBulletList.index(bulA))
-                    self.zukoHealthBar.score += 3
+                    self.zukoHealthBar.score += 10
                     print(self.zukoHealthBar.score)
                 # if bulA.x > self.width or bulA.x < 0:
                     
@@ -288,8 +296,9 @@ class Menu(States):
                 bulZ.x += bulZ.vel
                 if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x):
                     print('hit')
+                    self.aangHealthBar.bulCount += 1
                     self.zukoBulletList.pop(self.zukoBulletList.index(bulZ))
-                    self.aangHealthBar.score += 3
+                    self.aangHealthBar.score += 10
 
             if self.player.isJump: #when jumping
                 if self.player.jumpCount >= -10: 
@@ -318,7 +327,8 @@ class Menu(States):
                 else:
                     self.opponent.isJump = False
                     self.opponent.jumpCount = 10
-           
+            # if self.aangHealthBar.bulCount == 10 or self.zukoHealthBar.bulCount == 10:
+            #     self.state = "endMode"
           
         else:
             return
@@ -328,8 +338,9 @@ class Menu(States):
     def draw(self, screen):
         if self.state == "startMode":
             screen.blit(self.startScreen,(0,0))
+        elif self.state =="endMode":
+            screen.blit(self.endScreen, (0,0))
         elif self.state == "gameMode":
-           
             screen.blit(self.playScreen,(0,0))
             pygame.init()
                 
