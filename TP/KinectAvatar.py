@@ -79,7 +79,7 @@ class Aang(Character):
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
         self.posX = self.width//20
-        self.posY = self.height - 100
+        self.posY = 200
 
     def draw(self):
         if not(self.standing):
@@ -122,8 +122,8 @@ class Zuko(Character):
         self.standing = True
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
         self.bullets = []
-        self.posX = self.width*7//8
-        self.posY = self.height - 100
+        self.posX = 300
+        self.posY = 200
     def draw(self):
         if not(self.standing):
             if self.leftPlayerWalk == True:
@@ -383,9 +383,6 @@ class BodyGameRuntime(object):
         self.rightHX = 0
         self.leftHY = 0
         self.rightHY = 0
-
-    
-
         self.prevLHX = 0
         self.prevRHX = 0
         self.prevLHY = 0
@@ -409,9 +406,11 @@ class BodyGameRuntime(object):
         self.square = (0,0, 50, 50)
     
         self.auraSpheres = pygame.sprite.Group()
-        self.width = 600
-        self.height = 400
-        self.state = "startMode"
+        self.width = 1000
+        self.height = 600
+        self.playScreenW = 200
+        self.playScreenH = 100
+        self.state = "gameMode"
         self.startScreen = pygame.image.load("images/start.png")
         self.startScreen = pygame.transform.scale(self.startScreen,(self.width,self.height))
         self.time = 0
@@ -422,6 +421,7 @@ class BodyGameRuntime(object):
         self.opponent = Zuko(self.screen)
         self.bottom = BottomBounds(self.width, self.height)
         self.gameOver = False
+        self.draftPlayers = False
     
     def surface_to_array(surface):
         buffer_interface = surface.get_buffer()
@@ -563,10 +563,8 @@ class BodyGameRuntime(object):
 
     def run(self): 
         while not self._done:
-                   
             if self.gameOver == True:
                 pygame.init()
-                
             
                 self.bottom.draw(self._frame_surface)
                 self.player.draw()
@@ -607,7 +605,8 @@ class BodyGameRuntime(object):
                 self._frame_surface.blit(self.startScreen,(0,0))            
             elif self.state == "gameMode":
                 self._frame_surface.blit(self.playScreen, (0,0))
-          
+                self.draftPlayers = True
+                
             #  draw skeletons to _frame_surface
             if self._bodies is not None: 
                 for i in range(0, self._kinect.max_body_count):
@@ -629,12 +628,30 @@ class BodyGameRuntime(object):
                         # print("bend THAT SHIT!")
                         self.timerStart += 1
                         self.fireBend(joints, joint_points,self.rad) #collide
-                    # elif self.outsideBoxCollision(joints, joint_points):
-                        # print('it works')
-                    
+                    elif self.clapLeft(joints, joint_points):
+                        self.player.posX -= 5
+                    elif self.clapRight(joints, joint_points):
+                        self.player.posX += 5 
+                    elif self.clapUp(joints, joint_points):
+                        self.player.isJump = True
+                        print("isjump", self.player.isJump)
                     
                     else:
                         self.drawCircPalms(joints, joint_points) #orange
+            
+            if self.player.isJump: #when jumping
+                if self.player.jumpCount >= -10: 
+                    print('up')
+                    neg = 1 #start moving up 
+                    if self.player.jumpCount < 0:
+                        neg = -1 # moving down in the parabola
+                    #makes a quadratic parabola to illustrate diff speeds
+                    #0.5 scales the jump smaller 
+                    self.player.posY -= 0.5 * (self.player.jumpCount ** 2) * neg 
+                    self.player.jumpCount -= 1 #change heights
+                else:
+                    self.player.isJump = False
+                    self.player.jumpCount = 10
                         
             screen_lock = thread.allocate()
 
@@ -647,6 +664,13 @@ class BodyGameRuntime(object):
             surface_to_draw = pygame.transform.scale(self._frame_surface, (self._screen.get_width(), target_height))
             self._screen.blit(surface_to_draw, (0,0))
             surface_to_draw = None
+            
+            if self.draftPlayers == True:
+                print('players drawn')
+                self.player.draw()
+                self.opponent.draw()
+            print('posX', self.player.posX)
+            
             pygame.display.update()
 
             # --- Go ahead and update the screen with what we've drawn.
