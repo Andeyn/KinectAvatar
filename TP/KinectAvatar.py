@@ -409,8 +409,8 @@ class BodyGameRuntime(object):
         self.square = (0,0, 50, 50)
     
         self.auraSpheres = pygame.sprite.Group()
-        self.width = 100
-        self.height = 75
+        self.width = 600
+        self.height = 400
         self.state = "startMode"
         self.startScreen = pygame.image.load("images/start.png")
         self.startScreen = pygame.transform.scale(self.startScreen,(self.width,self.height))
@@ -602,10 +602,12 @@ class BodyGameRuntime(object):
             self.screenWidth = self.kinect.color_frame_desc.Width
             self.screenHeight = self.kinect.color_frame_desc.Height
             
-            pygame.draw.rect(self._frame_surface, (255, 255, 255), [0,0, self.screenWidth, self.screenHeight])
-            
-            # self._frame_surface.blit(self.startScreen,(0,0))            
-            
+            # pygame.draw.rect(self._frame_surface, (255, 255, 255), [0,0, self.screenWidth, self.screenHeight])
+            if self.state == "startMode":
+                self._frame_surface.blit(self.startScreen,(0,0))            
+            elif self.state == "gameMode":
+                self._frame_surface.blit(self.playScreen, (0,0))
+          
             #  draw skeletons to _frame_surface
             if self._bodies is not None: 
                 for i in range(0, self._kinect.max_body_count):
@@ -619,15 +621,17 @@ class BodyGameRuntime(object):
                     joint_points = self._kinect.body_joints_to_color_space(joints)
                     self.drawSpine(joints, joint_points)
                     self.drawCenterBox(joints, joint_points)
+                   
                     if body.hand_right_state == 4: #lasso
                         self.lassoDectection(joints, joint_points) #make blue circ
+                        self.state = "gameMode"
                     elif self.centerCollision(joint_points) == True: 
                         # print("bend THAT SHIT!")
                         self.timerStart += 1
                         self.fireBend(joints, joint_points,self.rad) #collide
                     # elif self.outsideBoxCollision(joints, joint_points):
                         # print('it works')
-                        
+                    
                     
                     else:
                         self.drawCircPalms(joints, joint_points) #orange
