@@ -474,14 +474,14 @@ class BodyGameRuntime(object):
                     self.drawCenterBox(joints, joint_points)
                    
                     if body.hand_right_state == 4: #lasso
+                        print("LASSO")
                         self.lassoDectection(joints, joint_points) #make blue circ
                         self.aangBulletList.append(Bullet(self.player.posX, self.player.posY, 8, (0,0,0), self.player.dir))
-
+                        print("aang shot")
                     elif self.centerCollision(joint_points) == True: 
                         # print("bend THAT SHIT!")
                         self.timerStart += 1
                         self.state = "gameMode"
-
                         self.fireBend(joints, joint_points,self.rad) #collide
                     elif self.clapLeft(joints, joint_points):
                         self.player.posX -= 5
@@ -494,9 +494,9 @@ class BodyGameRuntime(object):
                     else:
                         self.drawCircPalms(joints, joint_points) #orange
             
-            if self.player.isJump: #when jumping
+            if self.player.isJump: #when aang jumps
                 if self.player.jumpCount >= -10: 
-                    print('up')
+                    print('player up')
                     neg = 1 #start moving up 
                     if self.player.jumpCount < 0:
                         neg = -1 # moving down in the parabola
@@ -507,6 +507,20 @@ class BodyGameRuntime(object):
                 else:
                     self.player.isJump = False
                     self.player.jumpCount = 10
+            
+            if self.opponent.isJump: #when zuko jumps
+                if self.opponent.jumpCount >= -10: 
+                    print('opponent up')
+                    neg = 1 #start moving up 
+                    if self.opponent.jumpCount < 0:
+                        neg = -1 # moving down in the parabola
+                    #makes a quadratic parabola to illustrate diff speeds
+                    #0.5 scales the jump smaller 
+                    self.opponent.posY -= 0.5 * (self.opponent.jumpCount ** 2) * neg 
+                    self.opponent.jumpCount -= 1 #change heights
+                else:
+                    self.opponent.isJump = False
+                    self.opponent.jumpCount = 10
                     
             for bulZ in self.zukoBulletList: #removes bullets if it in vicinity of the enemy
                 bulZ.x += bulZ.vel
@@ -538,12 +552,16 @@ class BodyGameRuntime(object):
             surface_to_draw = None
             
             if self.draftPlayers == True:
-                print('players drawn')
                 self.aangHealthBar.draw(self.screen)
                 self.zukoHealthBar.draw(self.screen)
                 self.player.draw()
                 self.opponent.draw()
             print('posX', self.player.posX)
+            
+            for bulZ in self.aangBulletList:
+                bulZ.draw(self.screen)
+            for bulA in self.zukoBulletList:
+                bulA.draw(self.screen)   
             
             for event in pygame.event.get():
                 self.get_event(event)
