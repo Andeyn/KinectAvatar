@@ -56,7 +56,8 @@ class Aang(Character):
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
         self.posX = self.width//20
         self.posY = self.height - 100
-
+        self.dir = 1
+        
     def draw(self):
         if not(self.standing):
             if self.leftPlayerWalk == True:
@@ -100,6 +101,8 @@ class Zuko(Character):
         self.bullets = []
         self.posX = self.width*7//8
         self.posY = self.height - 100
+        self.dir = 1
+        
     def draw(self):
         if not(self.standing):
             if self.leftPlayerWalk == True:
@@ -155,7 +158,7 @@ class zukoHealthBar(object):
         self.score = 0
         
     def draw(self, win):
-        pygame.draw.rect(win, self.color, (self.x + self.score, self.y, self.width + self.score, self.height))
+        pygame.draw.rect(win, self.color, (self.x , self.y, self.width - self.score, self.height))
 
 
 class Bullet(object):
@@ -168,7 +171,9 @@ class Bullet(object):
         speed = random.randint(3, 10)
         self.vel = speed * self.dir #speed of bullet
         self.bulletList = []
-
+    def draw(self, win):
+        pygame.draw.circle(win, self.color, (int(self.x), int(self.y)), self.rad)
+        
 class States(object):
    def __init__(self):
        self.done = False
@@ -193,9 +198,11 @@ class Menu(States):
         self.player = Aang(self.screen)
         self.opponent = Zuko(self.screen)
         self.aangHealthBar = aangHealthBar(0,0, self.width//2, 20)
-        self.zukoHealthBar = zukoHealthBar(self.width//2,0, self.width - 220, 20)
+        self.zukoHealthBar = zukoHealthBar(self.width//2,0, self.width//2, 20)
         self.bottom = BottomBounds(self.width, self.height)
         self.gameOver = False
+        self.aangBulletList = []
+        self.zukoBulletList = []
        
     def cleanup(self):
        print('cleaning up Menu state stuff')
@@ -209,10 +216,12 @@ class Menu(States):
         if self.state == "gameMode":        
             if event.type == pygame.KEYDOWN:
                 if self.player.rightPlayerWalk == True: 
-                    dir = 1
+                    self.player.dir = 1
                 else:
-                    dir = -1
-                    
+                    self.player.dir = -1
+                if event.key == pygame.K_DOWN:
+                    self.aangBulletList.append(Bullet(self.player.posX, self.player.posY, 8, (0,0,0), self.player.dir))
+                
                 if event.key == pygame.K_LEFT and  self.player.posX > 0 :
                     self.player.posX -= self.player.vel
                     self.player.leftPlayerWalk = True
@@ -231,7 +240,15 @@ class Menu(States):
                     if event.key == pygame.K_UP and self.player.posX > 0 and self.player.posX <= self.width - self.player.spriteSize:
                         self.player.isJump = True
                         self.player.standing = True
+                        
+                if self.opponent.rightPlayerWalk == True: 
+                    self.opponent.dir = 1
+                else:
+                    self.opponent.dir = -1
                 
+                if event.key == pygame.K_s:
+                    self.zukoBulletList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
+                    
                 if event.key == pygame.K_a and  self.opponent.posX > 0 :
                     self.opponent.posX -= self.opponent.vel
                     self.opponent.leftPlayerWalk = True
@@ -257,6 +274,23 @@ class Menu(States):
         if self.gameOver == False:
             self.player.time += 1
             self.opponent.time += 1
+            
+            for bulA in self.aangBulletList: 
+                bulA.x += bulA.vel
+                if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x):
+                    print('hit')
+                    self.aangBulletList.pop(self.aangBulletList.index(bulA))
+                    self.zukoHealthBar.score += 3
+                    print(self.zukoHealthBar.score)
+                # if bulA.x > self.width or bulA.x < 0:
+                    
+            for bulZ in self.zukoBulletList: #removes bullets if it in vicinity of the enemy
+                bulZ.x += bulZ.vel
+                if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x):
+                    print('hit')
+                    self.zukoBulletList.pop(self.zukoBulletList.index(bulZ))
+                    self.aangHealthBar.score += 3
+
             if self.player.isJump: #when jumping
                 if self.player.jumpCount >= -10: 
                     print('up')
@@ -284,10 +318,8 @@ class Menu(States):
                 else:
                     self.opponent.isJump = False
                     self.opponent.jumpCount = 10
-            
-            if self.bottom.collidesWithChar(self.player) == False:
-                self.player.posY+=self.player.time * 9.8/100
-                self.opponent.posY += self.opponent.time * 9.8/100
+           
+          
         else:
             return
 
@@ -303,7 +335,10 @@ class Menu(States):
                 
             if self.gameOver == True:
                 pygame.init()
-            
+            for bulZ in self.aangBulletList:
+                bulZ.draw(self.screen)
+            for bulA in self.zukoBulletList:
+                bulA.draw(self.screen)   
                 
             pygame.display.update()
             self.bottom.draw(self.screen)
