@@ -132,6 +132,32 @@ class BottomBounds(object):
     def draw(self, screen):
         pygame.draw.rect(screen, (255,255,255), (0, self.screenHeight-2, self.screenWidth, 2))
 
+
+class aangHealthBar(object):
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = (255, 0, 0)
+        self.score = 0
+        
+    def draw(self, win):
+        pygame.draw.rect(win, self.color, (self.x + self.score, self.y, self.width - self.score, self.height))
+
+class zukoHealthBar(object):
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = (255, 255, 0)
+        self.score = 0
+        
+    def draw(self, win):
+        pygame.draw.rect(win, self.color, (self.x + self.score, self.y, self.width + self.score, self.height))
+
+
 class Bullet(object):
     def __init__(self, x, y, radius, color, direction):
         self.x = x
@@ -166,6 +192,8 @@ class Menu(States):
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
         self.player = Aang(self.screen)
         self.opponent = Zuko(self.screen)
+        self.aangHealthBar = aangHealthBar(0,0, self.width//2, 20)
+        self.zukoHealthBar = zukoHealthBar(self.width//2,0, self.width - 220, 20)
         self.bottom = BottomBounds(self.width, self.height)
         self.gameOver = False
        
@@ -281,6 +309,8 @@ class Menu(States):
             self.bottom.draw(self.screen)
             self.player.draw()
             self.opponent.draw()
+            self.aangHealthBar.draw(self.screen)
+            self.zukoHealthBar.draw(self.screen)
             self.timerFired()
 
 
@@ -324,9 +354,9 @@ class Control:
        self.state.update(self.screen, dt)
    def event_loop(self):
        for event in pygame.event.get():
-           if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT:
                self.done = True
-           self.state.get_event(event)
+            self.state.get_event(event)
    def main_game_loop(self):
        while not self.done:
            delta_time = self.clock.tick(self.fps)/1000.0
