@@ -4,6 +4,7 @@
 
 import pygame
 import random 
+import math
 
 pygame.init()
 
@@ -196,7 +197,7 @@ class Menu(States):
         self.startScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.endScreen = pygame.image.load("images/gameOver.png")
-        self.endScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
+        self.endScreen =pygame.transform.scale(self.endScreen,(self.width,self.height))
         self.playScreen = pygame.image.load("images/waternation.jpg")
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
         self.player = Aang(self.screen)
@@ -272,7 +273,7 @@ class Menu(States):
                         self.opponent.standing = True
                 if event.key == pygame.K_r:
                     self.state = "startMode"
-                        
+    
     def timerFired(self):
         if self.gameOver == False:
             self.player.time += 1
@@ -280,7 +281,7 @@ class Menu(States):
             
             for bulA in self.aangBulletList: 
                 bulA.x += bulA.vel
-                if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x):
+                if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y):
                     print('hit')
                     self.zukoHealthBar.bulCount += 1
                     self.aangBulletList.pop(self.aangBulletList.index(bulA))
@@ -290,7 +291,7 @@ class Menu(States):
                     
             for bulZ in self.zukoBulletList: #removes bullets if it in vicinity of the enemy
                 bulZ.x += bulZ.vel
-                if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x):
+                if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y):
                     print('hit')
                     self.aangHealthBar.bulCount += 1
                     self.zukoBulletList.pop(self.zukoBulletList.index(bulZ))
@@ -323,9 +324,13 @@ class Menu(States):
                 else:
                     self.opponent.isJump = False
                     self.opponent.jumpCount = 10
-            # if self.aangHealthBar.bulCount == 10 or self.zukoHealthBar.bulCount == 10:
-            #     self.state = "endMode"
-          
+            if self.aangHealthBar.bulCount == 10 or self.zukoHealthBar.bulCount == 10:
+                self.state = "endMode"
+            ### Hardcoded AI
+            if self.player.isJump == True:
+                self.opponent.isJump = True
+            if math.fabs(self.player.posX + 100) >= self.opponent.posX:
+                self.opponent.isJump = True
         else:
             return
 
@@ -333,20 +338,17 @@ class Menu(States):
         self.draw(screen)
     def draw(self, screen):
         if self.state == "startMode":
-            screen.blit(self.startScreen,(0,0))
-        elif self.state =="endMode":
-            screen.blit(self.endScreen, (0,0))
-        elif self.state == "gameMode":
-            screen.blit(self.playScreen,(0,0))
-            pygame.init()
-                
-            if self.gameOver == True:
-                pygame.init()
+            self.screen.blit(self.startScreen,(0,0))
+        if self.state =="endMode":
+            self.screen.blit(self.endScreen, (0,0))
+        if self.state == "gameMode":
+            self.screen.blit(self.playScreen,(0,0))
+            
             for bulZ in self.aangBulletList:
                 bulZ.draw(self.screen)
             for bulA in self.zukoBulletList:
                 bulA.draw(self.screen)   
-                
+                                
             pygame.display.update()
             self.bottom.draw(self.screen)
             self.player.draw()
