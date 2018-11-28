@@ -252,12 +252,12 @@ class BodyGameRuntime(object):
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.endScreen = pygame.image.load("images/gameOver.png")
         self.endScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
-        self.playScreen = pygame.image.load("images/waternation.png")
+        self.playScreen = pygame.image.load("images/waternation.jpg")
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
         self.player = Aang(self.screen)
         self.opponent = Zuko(self.screen)
-        self.aangHealthBar = aangHealthBar(0,0, self.width//2, 20)
-        self.zukoHealthBar = zukoHealthBar(self.width//2,0, self.width//2, 20)
+        self.aangHealthBar = aangHealthBar(0,0, 260, 20)
+        self.zukoHealthBar = zukoHealthBar(260,0, 260, 20)
         self.bottom = BottomBounds(self.width, self.height)
         self.gameOver = False
         self.aangBulletList = []
@@ -541,6 +541,8 @@ class BodyGameRuntime(object):
             
             if self.draftPlayers == True:
                 print('players drawn')
+                self.aangHealthBar.draw(self.screen)
+                self.zukoHealthBar.draw(self.screen)
                 self.player.draw()
                 self.opponent.draw()
             print('posX', self.player.posX)

@@ -200,7 +200,7 @@ class Menu(States):
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.endScreen = pygame.image.load("images/gameOver.png")
         self.endScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
-        self.playScreen = pygame.image.load("images/waternation.png")
+        self.playScreen = pygame.image.load("images/waternation.jpg")
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
         self.player = Aang(self.screen)
         self.opponent = Zuko(self.screen)
