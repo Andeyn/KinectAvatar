@@ -80,7 +80,8 @@ class Aang(Character):
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
         self.posX = self.width//20
         self.posY = 200
-
+        self.dir = 1
+        
     def draw(self):
         if not(self.standing):
             if self.leftPlayerWalk == True:
@@ -124,6 +125,8 @@ class Zuko(Character):
         self.bullets = []
         self.posX = 300
         self.posY = 200
+        self.dir = 1
+        
     def draw(self):
         if not(self.standing):
             if self.leftPlayerWalk == True:
@@ -143,18 +146,34 @@ class Zuko(Character):
         for bullet in self.bullets:
             self.screen.blit(self.airball,(bullet[0],bullet[1]))
 
-class BottomBounds(object):
-    def __init__(self, screenWidth, screenHeight):
-        self.screenWidth = screenWidth
-        self.screenHeight = screenHeight
-        self.posY = self.screenHeight - 2
-        
-    def collidesWithChar(self, other):
-        if other.posY <= self.posY:
-            return True
-    
-    def draw(self, screen):
-        pygame.draw.rect(screen, (255,255,255), (0, self.screenHeight-2, self.screenWidth, 2))
+class aangHealthBar(object):
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = (255, 0, 0)
+        self.score = 0
+        self.x = self.x + self.score
+        self.width =  self.width - self.score
+        self.bulCount = 0
+
+    def draw(self, win):
+        pygame.draw.rect(win, self.color, (self.x + self.score, self.y, self.width - self.score, self.height))
+
+class zukoHealthBar(object):
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = (255, 255, 0)
+        self.score = 0
+        self.width = self.width - self.score
+        self.bulCount = 0
+
+    def draw(self, win):
+        pygame.draw.rect(win, self.color, (self.x , self.y, self.width - self.score, self.height))
 
 class Bullet(object):
     def __init__(self, x, y, radius, color, direction):
@@ -166,6 +185,9 @@ class Bullet(object):
         speed = random.randint(3, 10)
         self.vel = speed * self.dir #speed of bullet
         self.bulletList = []
+        
+    def draw(self, win):
+        pygame.draw.circle(win, self.color, (int(self.x), int(self.y)), self.rad)
 
 class States(object):
    def __init__(self):
@@ -221,21 +243,25 @@ class BodyGameRuntime(object):
 
         self.square = (0,0, 50, 50)
     
-        self.auraSpheres = pygame.sprite.Group()
         self.width = 1000
-        self.height = 600
-        self.playScreenW = 200
-        self.playScreenH = 100
-        self.state = "gameMode"
-        self.startScreen = pygame.image.load("images/start.png")
-        self.startScreen = pygame.transform.scale(self.startScreen,(self.width,self.height))
+        self.height = 800
         self.time = 0
+        self.state = "startMode"
+        self.startScreen = pygame.image.load("images/start.png")
+        self.startScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
         self.screen = pygame.display.set_mode((self.width, self.height))
-        self.playScreen = pygame.image.load("images/startScene.jpg")
+        self.endScreen = pygame.image.load("images/gameOver.png")
+        self.endScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
+        self.playScreen = pygame.image.load("images/waternation.png")
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
         self.player = Aang(self.screen)
         self.opponent = Zuko(self.screen)
+        self.aangHealthBar = aangHealthBar(0,0, self.width//2, 20)
+        self.zukoHealthBar = zukoHealthBar(self.width//2,0, self.width//2, 20)
         self.bottom = BottomBounds(self.width, self.height)
+        self.gameOver = False
+        self.aangBulletList = []
+        self.zukoBulletList = []
         self.gameOver = False
         self.draftPlayers = False
     
@@ -451,10 +477,13 @@ class BodyGameRuntime(object):
                    
                     if body.hand_right_state == 4: #lasso
                         self.lassoDectection(joints, joint_points) #make blue circ
-                        self.state = "gameMode"
+                        self.aangBulletList.append(Bullet(self.player.posX, self.player.posY, 8, (0,0,0), self.player.dir))
+
                     elif self.centerCollision(joint_points) == True: 
                         # print("bend THAT SHIT!")
                         self.timerStart += 1
+                        self.state = "gameMode"
+
                         self.fireBend(joints, joint_points,self.rad) #collide
                     elif self.clapLeft(joints, joint_points):
                         self.player.posX -= 5
@@ -480,7 +509,24 @@ class BodyGameRuntime(object):
                 else:
                     self.player.isJump = False
                     self.player.jumpCount = 10
-                        
+                    
+            for bulZ in self.zukoBulletList: #removes bullets if it in vicinity of the enemy
+                bulZ.x += bulZ.vel
+                if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x):
+                    print('hit')
+                    self.aangHealthBar.bulCount += 1
+                    self.zukoBulletList.pop(self.zukoBulletList.index(bulZ))
+                    self.aangHealthBar.score += 10
+           
+            for bulA in self.aangBulletList: 
+                bulA.x += bulA.vel
+                if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x):
+                    print('hit')
+                    self.zukoHealthBar.bulCount += 1
+                    self.aangBulletList.pop(self.aangBulletList.index(bulA))
+                    self.zukoHealthBar.score += 10
+                    print(self.zukoHealthBar.score)
+            
             screen_lock = thread.allocate()
 
 

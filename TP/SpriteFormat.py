@@ -191,7 +191,6 @@ class States(object):
 class Menu(States):
     def __init__(self):
         States.__init__(self)
-        self.auraSpheres = pygame.sprite.Group()
         self.width = 600
         self.height = 400
         self.time = 0
@@ -201,7 +200,7 @@ class Menu(States):
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.endScreen = pygame.image.load("images/gameOver.png")
         self.endScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
-        self.playScreen = pygame.image.load("images/startScene.jpg")
+        self.playScreen = pygame.image.load("images/waternation.png")
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
         self.player = Aang(self.screen)
         self.opponent = Zuko(self.screen)
