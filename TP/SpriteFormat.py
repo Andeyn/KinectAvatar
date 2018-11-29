@@ -208,6 +208,10 @@ class Menu(States):
         self.gameOver = False
         self.aangBulletList = []
         self.zukoBulletList = []
+        self.aangShot = False
+        self.bulletSpeed = 0
+        self.bulletPosX = 0
+        self.bulletPosY = 0
     def cleanup(self):
        print('cleaning up Menu state stuff')
     def startup(self):
@@ -224,8 +228,9 @@ class Menu(States):
                 else:
                     self.player.dir = -1
                 if event.key == pygame.K_DOWN:
+                    self.aangShot = True
                     self.aangBulletList.append(Bullet(self.player.posX, self.player.posY, 8, (0,0,0), self.player.dir))
-                
+                    
                 if event.key == pygame.K_LEFT and  self.player.posX > 0 :
                     self.player.posX -= self.player.vel
                     self.player.leftPlayerWalk = True
@@ -281,25 +286,30 @@ class Menu(States):
             
             for bulA in self.aangBulletList: 
                 bulA.x += bulA.vel
+                self.bulletPosX = bulA.x
+                self.bulletPosY = bulA.y
+                self.bulletSpeed = bulA.vel
                 if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y):
                     print('hit')
                     self.zukoHealthBar.bulCount += 1
-                    self.aangBulletList.pop(self.aangBulletList.index(bulA))
+                    self.aangBulletList.remove(bulA)
                     self.zukoHealthBar.score += 10
-                    print(self.zukoHealthBar.score)
-                # if bulA.x > self.width or bulA.x < 0:
+                if bulA.x > self.width:
+                    self.aangBulletList.remove(bulA)
                     
             for bulZ in self.zukoBulletList: #removes bullets if it in vicinity of the enemy
                 bulZ.x += bulZ.vel
                 if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y):
                     print('hit')
                     self.aangHealthBar.bulCount += 1
-                    self.zukoBulletList.pop(self.zukoBulletList.index(bulZ))
+                    self.zukoBulletList.remove(bulZ)
                     self.aangHealthBar.score += 10
+                if bulZ.x < 0:
+                    self.zukoBulletList.remove(bulZ)
+                    
 
             if self.player.isJump: #when jumping
                 if self.player.jumpCount >= -10: 
-                    print('up')
                     neg = 1 #start moving up 
                     if self.player.jumpCount < 0:
                         neg = -1 # moving down in the parabola
@@ -313,7 +323,6 @@ class Menu(States):
                     
             if self.opponent.isJump: #when jumping
                 if self.opponent.jumpCount >= -10: 
-                    print('up')
                     neg = 1 #start moving up 
                     if self.opponent.jumpCount < 0:
                         neg = -1 # moving down in the parabola
@@ -324,13 +333,23 @@ class Menu(States):
                 else:
                     self.opponent.isJump = False
                     self.opponent.jumpCount = 10
-            if self.aangHealthBar.bulCount == 10 or self.zukoHealthBar.bulCount == 10:
+            if self.aangHealthBar.bulCount == 30 or self.zukoHealthBar.bulCount == 30:
                 self.state = "endMode"
+                
             ### Hardcoded AI
             if self.player.isJump == True:
                 self.opponent.isJump = True
             if math.fabs(self.player.posX + 100) >= self.opponent.posX:
                 self.opponent.isJump = True
+            if self.aangShot == True:
+                print(self.bulletPosX, self.bulletPosY)
+                # print(self.bulletPosY)
+                if self.bulletSpeed > 5:
+                    if (self.bulletPosX + 50 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX and self.bulletPosY >= self.opponent.posY:
+                        self.opponent.isJump = True
+                else:
+                    if (self.bulletPosX + 20 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX:
+                        self.opponent.isJump = True
         else:
             return
 
