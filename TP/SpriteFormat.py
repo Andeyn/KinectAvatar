@@ -171,7 +171,7 @@ class Bullet(object):
         self.rad = radius
         self.color = color
         self.dir = direction #which way the bullet shoots
-        speed = random.randint(3, 10)
+        speed = random.randint(4, 10)
         self.vel = speed * self.dir #speed of bullet
         self.bulletList = []
         
@@ -293,9 +293,11 @@ class Menu(States):
                     print('hit')
                     self.zukoHealthBar.bulCount += 1
                     self.aangBulletList.remove(bulA)
+                    self.aangShot = False
                     self.zukoHealthBar.score += 10
                 if bulA.x > self.width:
                     self.aangBulletList.remove(bulA)
+                    self.aangShot = False
                     
             for bulZ in self.zukoBulletList: #removes bullets if it in vicinity of the enemy
                 bulZ.x += bulZ.vel
@@ -315,7 +317,7 @@ class Menu(States):
                         neg = -1 # moving down in the parabola
                     #makes a quadratic parabola to illustrate diff speeds
                     #0.5 scales the jump smaller 
-                    self.player.posY -= 0.5 * (self.player.jumpCount ** 2) * neg 
+                    self.player.posY -= 0.75*(0.5 * (self.player.jumpCount ** 2) * neg)
                     self.player.jumpCount -= 1 #change heights
                 else:
                     self.player.isJump = False
@@ -328,7 +330,7 @@ class Menu(States):
                         neg = -1 # moving down in the parabola
                     #makes a quadratic parabola to illustrate diff speeds
                     #0.5 scales the jump smaller 
-                    self.opponent.posY -= 0.5 * (self.opponent.jumpCount ** 2) * neg 
+                    self.opponent.posY -= 0.75*(0.5 * (self.opponent.jumpCount ** 2) * neg)
                     self.opponent.jumpCount -= 1 #change heights
                 else:
                     self.opponent.isJump = False
@@ -337,13 +339,11 @@ class Menu(States):
                 self.state = "endMode"
                 
             ### Hardcoded AI
-            if self.player.isJump == True:
+            if self.player.isJump == True and self.aangShot == False:
                 self.opponent.isJump = True
             if math.fabs(self.player.posX + 100) >= self.opponent.posX:
                 self.opponent.isJump = True
             if self.aangShot == True:
-                print(self.bulletPosX, self.bulletPosY)
-                # print(self.bulletPosY)
                 if self.bulletSpeed > 5:
                     if (self.bulletPosX + 50 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX and self.bulletPosY >= self.opponent.posY:
                         self.opponent.isJump = True
