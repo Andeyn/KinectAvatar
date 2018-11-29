@@ -249,18 +249,16 @@ class BodyGameRuntime(object):
         self.startScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.endScreen = pygame.image.load("images/gameOver.png")
-        self.endScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
+        self.endScreen =pygame.transform.scale(self.endScreen,(self.width,self.height))
         self.playScreen = pygame.image.load("images/waternation.jpg")
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
         self.player = Aang(self.screen)
         self.opponent = Zuko(self.screen)
-        self.aangHealthBar = aangHealthBar(0,0, 260, 20)
-        self.zukoHealthBar = zukoHealthBar(260,0, 260, 20)
-        self.bottom = BottomBounds(self.width, self.height)
+        self.aangHealthBar = aangHealthBar(0,0, self.width//2, 20)
+        self.zukoHealthBar = zukoHealthBar(self.width//2,0, self.width//2, 20)
         self.gameOver = False
         self.aangBulletList = []
         self.zukoBulletList = []
-        self.gameOver = False
         self.draftPlayers = False
     
     def surface_to_array(surface):
