@@ -208,7 +208,6 @@ class Menu(States):
         self.opponent = Zuko(self.screen)
         self.aangHealthBar = aangHealthBar(0,0, self.width//2, 20)
         self.zukoHealthBar = zukoHealthBar(self.width//2,0, self.width//2, 20)
-        self.bottom = BottomBounds(self.width, self.height)
         self.gameOver = False
         self.aangBulletList = []
         self.zukoBulletList = []

@@ -243,26 +243,29 @@ class BodyGameRuntime(object):
     
         self.width = 1000
         self.height = 800
+        self.draftPlayers = False
         self.time = 0
         self.state = "startMode"
         self.startScreen = pygame.image.load("images/start.png")
         self.startScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.endScreen = pygame.image.load("images/gameOver.png")
-        self.endScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
+        self.endScreen =pygame.transform.scale(self.endScreen,(self.width,self.height))
         self.playScreen = pygame.image.load("images/waternation.jpg")
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
         self.player = Aang(self.screen)
         self.opponent = Zuko(self.screen)
-        self.aangHealthBar = aangHealthBar(0,0, 260, 20)
-        self.zukoHealthBar = zukoHealthBar(260,0, 260, 20)
-        self.bottom = BottomBounds(self.width, self.height)
+        self.aangHealthBar = aangHealthBar(0,0, self.width//2, 20)
+        self.zukoHealthBar = zukoHealthBar(self.width//2,0, self.width//2, 20)
         self.gameOver = False
         self.aangBulletList = []
         self.zukoBulletList = []
-        self.gameOver = False
-        self.draftPlayers = False
-    
+        self.aangShot = False
+        self.bulletSpeed = 0
+        self.bulletPosX = 0
+        self.bulletPosY = 0
+        
+        
     def surface_to_array(surface):
         buffer_interface = surface.get_buffer()
         address = ctypes.c_void_p()
@@ -493,51 +496,73 @@ class BodyGameRuntime(object):
                     
                     else:
                         self.drawCircPalms(joints, joint_points) #orange
-            
-            if self.player.isJump: #when aang jumps
+            ### isJump
+            if self.player.isJump: #when jumping
                 if self.player.jumpCount >= -10: 
-                    print('player up')
                     neg = 1 #start moving up 
                     if self.player.jumpCount < 0:
                         neg = -1 # moving down in the parabola
                     #makes a quadratic parabola to illustrate diff speeds
                     #0.5 scales the jump smaller 
-                    self.player.posY -= 0.5 * (self.player.jumpCount ** 2) * neg 
+                    self.player.posY -= 0.75*(0.5 * (self.player.jumpCount ** 2) * neg)
                     self.player.jumpCount -= 1 #change heights
                 else:
                     self.player.isJump = False
                     self.player.jumpCount = 10
+                    
             
-            if self.opponent.isJump: #when zuko jumps
+            if self.opponent.isJump: #when jumping
                 if self.opponent.jumpCount >= -10: 
-                    print('opponent up')
                     neg = 1 #start moving up 
                     if self.opponent.jumpCount < 0:
                         neg = -1 # moving down in the parabola
                     #makes a quadratic parabola to illustrate diff speeds
                     #0.5 scales the jump smaller 
-                    self.opponent.posY -= 0.5 * (self.opponent.jumpCount ** 2) * neg 
+                    self.opponent.posY -= 0.75*(0.5 * (self.opponent.jumpCount ** 2) * neg)
                     self.opponent.jumpCount -= 1 #change heights
                 else:
                     self.opponent.isJump = False
                     self.opponent.jumpCount = 10
+            if self.aangHealthBar.bulCount == 30 or self.zukoHealthBar.bulCount == 30:
+                self.state = "endMode"
+            ### Bullets
+            for bulA in self.aangBulletList: 
+                bulA.x += bulA.vel
+                self.bulletPosX = bulA.x
+                self.bulletPosY = bulA.y
+                self.bulletSpeed = bulA.vel
+                if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y):
+                    print('hit')
+                    self.zukoHealthBar.bulCount += 1
+                    self.aangBulletList.remove(bulA)
+                    self.aangShot = False
+                    self.zukoHealthBar.score += 10
+                if bulA.x > self.width:
+                    self.aangBulletList.remove(bulA)
+                    self.aangShot = False
                     
             for bulZ in self.zukoBulletList: #removes bullets if it in vicinity of the enemy
                 bulZ.x += bulZ.vel
-                if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x):
+                if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y):
                     print('hit')
                     self.aangHealthBar.bulCount += 1
-                    self.zukoBulletList.pop(self.zukoBulletList.index(bulZ))
+                    self.zukoBulletList.remove(bulZ)
                     self.aangHealthBar.score += 10
-           
-            for bulA in self.aangBulletList: 
-                bulA.x += bulA.vel
-                if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x):
-                    print('hit')
-                    self.zukoHealthBar.bulCount += 1
-                    self.aangBulletList.pop(self.aangBulletList.index(bulA))
-                    self.zukoHealthBar.score += 10
-                    print(self.zukoHealthBar.score)
+                if bulZ.x < 0:
+                    self.zukoBulletList.remove(bulZ)
+                ### AI CPU
+            if self.player.isJump == True and self.aangShot == False:
+                self.opponent.isJump = True
+            if math.fabs(self.player.posX + 100) >= self.opponent.posX:
+                self.opponent.isJump = True
+            if self.aangShot == True:
+                if self.bulletSpeed > 5:
+                    if (self.bulletPosX + 50 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX and self.bulletPosY >= self.opponent.posY:
+                        self.opponent.isJump = True
+                else:
+                    if (self.bulletPosX + 20 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX:
+                        self.opponent.isJump = True
+            
             
             screen_lock = thread.allocate()
 
