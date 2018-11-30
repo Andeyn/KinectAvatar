@@ -55,6 +55,7 @@ class Aang(Character):
         self.posX = self.width//20
         self.posY = self.height - 100
         self.dir = 1
+        self.bulletCount = 0
         
     def draw(self):
         if not(self.standing):
@@ -100,6 +101,8 @@ class Zuko(Character):
         self.posX = self.width*7//8
         self.posY = self.height - 100
         self.dir = 1
+        self.jumpTimes = 0
+        self.bulletCount = 0
         
     def draw(self):
         if not(self.standing):
@@ -159,6 +162,7 @@ class zukoHealthBar(object):
         self.score = 0
         self.width = self.width - self.score
         self.bulCount = 0
+        self.hitOnce = False
 
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x , self.y, self.width - self.score, self.height))
@@ -212,6 +216,7 @@ class Menu(States):
         self.bulletSpeed = 0
         self.bulletPosX = 0
         self.bulletPosY = 0
+        
     def cleanup(self):
        print('cleaning up Menu state stuff')
     def startup(self):
@@ -228,8 +233,11 @@ class Menu(States):
                 else:
                     self.player.dir = -1
                 if event.key == pygame.K_DOWN:
+                    self.player.bulletCount += 1
                     self.aangShot = True
-                    self.aangBulletList.append(Bullet(self.player.posX, self.player.posY, 8, (0,0,0), self.player.dir))
+                    self.player.bulletCount = 1
+                    if self.player.time % 10 == 0:
+                        self.aangBulletList.append(Bullet(self.player.posX, self.player.posY, 8, (0,0,0), self.player.dir))
                     
                 if event.key == pygame.K_LEFT and  self.player.posX > 0 :
                     self.player.posX -= self.player.vel
@@ -281,11 +289,18 @@ class Menu(States):
     
     def timerFired(self):
         if self.gameOver == False:
-            self.player.time += 1
+            if self.player.bulletCount == 1 and self.bulletPosX == None:
+                self.player.time += 1
+                if self.player.time % 20 == 0:
+                    self.player.bulletCount = 0
             self.opponent.time += 1
+            # print ("bCount", self.player.bulletCount)
+            # print ('time', self.player.time)
             
+            ### FIX WHEN TOUCHING
             for bulA in self.aangBulletList: 
                 bulA.x += bulA.vel
+                print(self.bulletPosX)
                 self.bulletPosX = bulA.x
                 self.bulletPosY = bulA.y
                 self.bulletSpeed = bulA.vel
@@ -338,18 +353,30 @@ class Menu(States):
             if self.aangHealthBar.bulCount == 30 or self.zukoHealthBar.bulCount == 30:
                 self.state = "endMode"
                 
-            ### Hardcoded AI
+            ### Hardcoded Defensive AI
             if self.player.isJump == True and self.aangShot == False:
                 self.opponent.isJump = True
+                self.opponent.hitOnce = True
+
             if math.fabs(self.player.posX + 100) >= self.opponent.posX:
                 self.opponent.isJump = True
+                self.opponent.hitOnce = True
             if self.aangShot == True:
                 if self.bulletSpeed > 5:
                     if (self.bulletPosX + 50 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX and self.bulletPosY >= self.opponent.posY:
                         self.opponent.isJump = True
+                        self.opponent.hitOnce = True
+
                 else:
                     if (self.bulletPosX + 20 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX:
                         self.opponent.isJump = True
+                        self.opponent.hitOnce = True
+
+            if self.player.posX - 20 < self.opponent.posX < self.player.posX + 20:
+                self.opponent.hitOnce = True
+                self.aangHealthBar.score += 10
+                self.zukoHealthBar.score += 10
+                print('yo')
         else:
             return
 
