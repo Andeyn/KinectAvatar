@@ -5,6 +5,7 @@
 import pygame
 import random 
 import math
+import sys
 
 pygame.init()
 
@@ -86,12 +87,12 @@ class Momo(Character):
         super().__init__(screen)
         spriteSizeX = 100
         spriteSizeY = 60
-        self.aangLeft = pygame.image.load('images/aang2.png')
-        self.aangLeft = pygame.transform.scale(self.aangLeft, (spriteSizeX, spriteSizeY))
-        self.aangRight = pygame.image.load('images/aang1.png')
-        self.aangRight = pygame.transform.scale(self.aangRight, (spriteSizeX, spriteSizeY))
-        self.aangFly = pygame.image.load('images/aangFly.png')
-        self.aangFly = pygame.transform.scale(self.aangFly, (spriteSizeX, spriteSizeX))
+        self.momoLeft = pygame.image.load('images/momo.png')
+        self.momoLeft = pygame.transform.scale(self.momoLeft, (spriteSizeX, spriteSizeY))
+        self.momoRight = pygame.image.load('images/momo.png')
+        self.momoRight = pygame.transform.scale(self.momoRight, (spriteSizeX, spriteSizeY))
+        self.momoFly = pygame.image.load('images/momo.png')
+        self.momoFly = pygame.transform.scale(self.momoFly, (spriteSizeX, spriteSizeX))
         self.airball = pygame.image.load('images/airballs.png')
         self.airball = pygame.transform.scale(self.airball, (20, 20))
         self.isJump = False
@@ -110,18 +111,18 @@ class Momo(Character):
     def draw(self):
         if not(self.standing):
             if self.leftPlayerWalk == True:
-                self.screen.blit(self.aangLeft, (self.posX, self.posY))
+                self.screen.blit(self.momoLeft, (self.posX, self.posY))
             elif self.rightPlayerWalk == True:
-                self.screen.blit(self.aangRight, (self.posX, self.posY))
+                self.screen.blit(self.momoRight, (self.posX, self.posY))
                 
         else: #never lets man stand straight so he can shoot bullets
             if self.leftPlayerWalk == True:
-                self.screen.blit(self.aangLeft, (self.posX, self.posY))
+                self.screen.blit(self.momoLeft, (self.posX, self.posY))
             elif self.rightPlayerWalk == True:
-                self.screen.blit(self.aangRight, (self.posX,self.posY))
+                self.screen.blit(self.momoRight, (self.posX,self.posY))
                 
         if self.isJump:
-            self.screen.blit(self.aangFly, (self.posX, self.posY))
+            self.screen.blit(self.momoFly, (self.posX, self.posY))
             
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
         pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
@@ -490,6 +491,7 @@ class Menu(States):
         self.startScreen = pygame.image.load("images/start.png")
         self.startScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
         self.screen = pygame.display.set_mode((self.width, self.height))
+        ### Character Selection
         self.charAangScreen = pygame.image.load("images/charAangSelect.jpg")
         self.charAangScreen =pygame.transform.scale(self.charAangScreen,(self.width,self.height))
         self.charKataraScreen = pygame.image.load("images/charKataraSelect.jpg")
@@ -498,21 +500,49 @@ class Menu(States):
         self.charTophScreen =pygame.transform.scale(self.charTophScreen,(self.width,self.height))        
         self.charCabScreen = pygame.image.load("images/charCabbageSelect.jpg")
         self.charCabScreen =pygame.transform.scale(self.charCabScreen,(self.width,self.height))
-        self.charCBManScreen = pygame.image.load("images/charCobmustionSelect.png")
+        self.charCBManScreen = pygame.image.load("images/charCombustionSelect.png")
         self.charCBManScreen = pygame.transform.scale(self.charCBManScreen,(self.width,self.height))
-        self.charTyLeeScreen = pygame.image.load("images/charcTyLeeSelect.jpg")
+        self.charTyLeeScreen = pygame.image.load("images/charTyLeeSelect.jpg")
         self.charTyLeeScreen = pygame.transform.scale(self.charTyLeeScreen,(self.width,self.height))
         self.charZukoScreen = pygame.image.load("images/charZukoSelect.jpg")
         self.charZukoScreen = pygame.transform.scale(self.charZukoScreen,(self.width,self.height))
         self.charMomoScreen = pygame.image.load("images/charAppaMomoSelect.jpg")
         self.charMomoScreen = pygame.transform.scale(self.charMomoScreen,(self.width,self.height))
-
+        self.charList = [self.charAangScreen, self.charMomoScreen, self.charKataraScreen,self.charCBManScreen, self.charTophScreen, self.charTyLeeScreen, self.charCabScreen, self.charZukoScreen]
+        
+        
         self.endScreen = pygame.image.load("images/gameOver.png")
         self.endScreen =pygame.transform.scale(self.endScreen,(self.width,self.height))
         self.playScreen = pygame.image.load("images/waternation.jpg")
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
+    
         self.player = Aang(self.screen)
         self.opponent = Zuko(self.screen)
+        if self.state == "selectAang":
+            self.player = Aang(self.screen)
+            self.opponent = Zuko(self.screen)
+        elif self.state == "selectToph":
+            self.player = Toph(self.screen)
+            self.opponent = Zuko(self.screen)
+        elif self.state == "selectZuko":
+            self.player = Zuko(self.screen)
+            self.opponent = Zuko(self.screen)
+        elif self.state == "selectCombustion":
+            self.player = combustionMan(self.screen)
+            self.opponent = Zuko(self.screen)
+        elif self.state == "selectTyLee":
+            self.player = tyLee(self.screen)
+            self.opponent = Zuko(self.screen)
+        elif self.state == "selectKatara":
+            self.player = Katara(self.screen)
+            self.opponent = Zuko(self.screen)
+        elif self.state == "selectCabbage":
+            self.player = cabbageMan(self.screen)
+            self.opponent = Zuko(self.screen)
+        elif self.state == "selectMomo":
+            self.player = Momo(self.screen)
+            self.opponent = Zuko(self.screen)            
+        
         self.mainHealthBar = mainHealthBar(0,0, self.width//2, 20)
         self.oppHealthBar = oppHealthBar(self.width//2,0, self.width//2, 20)
         self.gameOver = False
@@ -530,6 +560,49 @@ class Menu(States):
     def get_event(self, event):
         if self.state == "startMode":
             if event.type == pygame.MOUSEBUTTONDOWN:
+                self.state = "selectAang"
+        if event.type == pygame.KEYDOWN:
+            if self.state == "selectAang":
+                if event.key == pygame.K_RIGHT:
+                    self.state = "selectZuko"
+                if event.key == pygame.K_LEFT:
+                    self.state = "selectMomo"
+            elif self.state == "selectZuko":
+                if event.key == pygame.K_RIGHT:
+                    self.state = "selectCabbage"
+                if event.key == pygame.K_LEFT:
+                    self.state = "selectAang"
+            elif self.state == "selectCabbage":
+                if event.key == pygame.K_RIGHT:
+                    self.state = "selectTyLee"
+                if event.key == pygame.K_LEFT:
+                    self.state = "selectZuko"
+            elif self.state == "selectTyLee":
+                if event.key == pygame.K_RIGHT:
+                    self.state = "selectToph"
+                if event.key == pygame.K_LEFT:
+                    self.state = "selectCabbage"
+            elif self.state == "selectToph":
+                if event.key == pygame.K_RIGHT:
+                    self.state = "selectCombustion"
+                if event.key == pygame.K_LEFT:
+                    self.state = "selectTyLee"
+            elif self.state == "selectCombustion":
+                if event.key == pygame.K_RIGHT:
+                    self.state = "selectKatara"
+                if event.key == pygame.K_LEFT:
+                    self.state = "selectToph"
+            elif self.state == "selectKatara":
+                if event.key == pygame.K_RIGHT:
+                    self.state = "selectMomo"
+                if event.key == pygame.K_LEFT:
+                    self.state = "selectCombustion"
+            elif self.state == "selectMomo":
+                if event.key == pygame.K_RIGHT:
+                    self.state = "selectAang"
+                if event.key == pygame.K_LEFT:
+                    self.state = "selectKatara"
+            if event.key == pygame.K_RETURN:
                 self.state = "gameMode"
 
         if self.state == "gameMode":        
@@ -689,8 +762,25 @@ class Menu(States):
     def update(self, screen, dt):
         self.draw(screen)
     def draw(self, screen):
+        # print(self.state)
         if self.state == "startMode":
             self.screen.blit(self.startScreen,(0,0))
+        if self.state == "selectAang":
+            self.screen.blit(self.charAangScreen,(0,0))
+        if self.state == "selectZuko":
+            self.screen.blit(self.charZukoScreen,(0,0))            
+        if self.state == "selectToph":
+            self.screen.blit(self.charTophScreen,(0,0))
+        if self.state == "selectTyLee":
+            self.screen.blit(self.charTyLeeScreen,(0,0))
+        if self.state == "selectKatara":
+            self.screen.blit(self.charKataraScreen,(0,0))
+        if self.state == "selectCabbage":
+            self.screen.blit(self.charCabScreen,(0,0))
+        if self.state == "selectCombustion":
+            self.screen.blit(self.charCBManScreen,(0,0))
+        if self.state == "selectMomo":
+            self.screen.blit(self.charMomoScreen,(0,0))
         if self.state =="endMode":
             self.screen.blit(self.endScreen, (0,0))
         if self.state == "gameMode":
