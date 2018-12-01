@@ -453,12 +453,23 @@ class oppHealthBar(object):
         self.score = 0
         self.width = self.width - self.score
         self.bulCount = 0
-        self.hitOnce = False
 
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x , self.y, self.width - self.score, self.height))
 
+class chargeBar(object):
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = (173,255,47)
+        self.score = 0
+        self.tBTime = 0
 
+    def draw(self, win):
+        pygame.draw.rect(win, self.color, (self.x , self.y, self.width + self.tBTime, self.height))
+        
 class Bullet(object):
     def __init__(self, x, y, radius, color, direction):
         self.x = x
@@ -486,7 +497,6 @@ class Menu(States):
         States.__init__(self)
         self.width = 600
         self.height = 400
-        self.time = 0
         self.state = "startMode"
         self.startScreen = pygame.image.load("images/start.png")
         self.startScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
@@ -543,6 +553,7 @@ class Menu(States):
             self.player = Momo(self.screen)
             self.opponent = Zuko(self.screen)            
         
+        self.timeBar = chargeBar(0, 20, 0, 20)
         self.mainHealthBar = mainHealthBar(0,0, self.width//2, 20)
         self.oppHealthBar = oppHealthBar(self.width//2,0, self.width//2, 20)
         self.gameOver = False
@@ -668,6 +679,11 @@ class Menu(States):
     
     def timerFired(self):
         if self.gameOver == False:
+            self.timeBar.tBTime += 3
+            if self.timeBar.width + self.timeBar.tBTime == self.width:
+                self.timeBar.tBTime = 0
+                
+            print(self.timeBar.tBTime)
             if self.player.bulletCount == 1 and self.bulletPosX == None:
                 self.player.time += 1
                 if self.player.time % 20 == 0:
@@ -676,7 +692,6 @@ class Menu(States):
             # print ("bCount", self.player.bulletCount)
             # print ('time', self.player.time)
             
-            ### FIX WHEN TOUCHING
             for bulA in self.aangBulletList: 
                 bulA.x += bulA.vel
                 print(self.bulletPosX)
@@ -733,26 +748,22 @@ class Menu(States):
                 self.state = "endMode"
                 
             ### Hardcoded Defensive AI
-            if self.player.isJump == True and self.aangShot == False:
+            if self.player.isJump == True and self.aangShot == False: #avoids bullet if player shoots
                 self.opponent.isJump = True
-                self.opponent.hitOnce = True
 
             if math.fabs(self.player.posX + 100) >= self.opponent.posX:
                 self.opponent.isJump = True
-                self.opponent.hitOnce = True
             if self.aangShot == True:
                 if self.bulletSpeed > 5:
                     if (self.bulletPosX + 50 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX and self.bulletPosY >= self.opponent.posY:
                         self.opponent.isJump = True
-                        self.opponent.hitOnce = True
 
                 else:
                     if (self.bulletPosX + 20 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX:
                         self.opponent.isJump = True
-                        self.opponent.hitOnce = True
 
+            ### FIX WHEN TOUCHING
             if self.player.posX - 20 < self.opponent.posX < self.player.posX + 20:
-                self.opponent.hitOnce = True
                 self.mainHealthBar.score += 10
                 self.oppHealthBar.score += 10
                 print('yo')
@@ -794,6 +805,7 @@ class Menu(States):
             pygame.display.update()
             self.player.draw()
             self.opponent.draw()
+            self.timeBar.draw(self.screen)
             self.mainHealthBar.draw(self.screen)
             self.oppHealthBar.draw(self.screen)
             self.timerFired()
