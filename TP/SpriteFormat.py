@@ -79,6 +79,296 @@ class Aang(Character):
         for bullet in self.bullets:
             self.screen.blit(self.airball,(bullet[0],bullet[1]))
 
+
+
+class Momo(Character):
+    def __init__(self, screen):
+        super().__init__(screen)
+        spriteSizeX = 100
+        spriteSizeY = 60
+        self.aangLeft = pygame.image.load('images/aang2.png')
+        self.aangLeft = pygame.transform.scale(self.aangLeft, (spriteSizeX, spriteSizeY))
+        self.aangRight = pygame.image.load('images/aang1.png')
+        self.aangRight = pygame.transform.scale(self.aangRight, (spriteSizeX, spriteSizeY))
+        self.aangFly = pygame.image.load('images/aangFly.png')
+        self.aangFly = pygame.transform.scale(self.aangFly, (spriteSizeX, spriteSizeX))
+        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.isJump = False
+        self.leftPlayerWalk = False
+        self.rightPlayerWalk = True
+        self.jumpCount = 10
+        self.walkCount = 0
+        self.standing = True
+        self.bullets = []
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.posX = self.width//20
+        self.posY = self.height - 100
+        self.dir = 1
+        self.bulletCount = 0
+        
+    def draw(self):
+        if not(self.standing):
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.aangLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.aangRight, (self.posX, self.posY))
+                
+        else: #never lets man stand straight so he can shoot bullets
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.aangLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.aangRight, (self.posX,self.posY))
+                
+        if self.isJump:
+            self.screen.blit(self.aangFly, (self.posX, self.posY))
+            
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        
+        for bullet in self.bullets:
+            self.screen.blit(self.airball,(bullet[0],bullet[1]))
+
+class cabbageMan(Character):
+    def __init__(self, screen):
+        super().__init__(screen)
+        spriteSizeX = 100
+        spriteSizeY = 60
+        self.cabLeft = pygame.image.load('images/cabbageFullBody.png')
+        self.cabLeft = pygame.transform.scale(self.cabLeft, (spriteSizeX, spriteSizeY))
+        self.cabRight = pygame.image.load('images/cabbageFullBody.png')
+        self.cabRight = pygame.transform.scale(self.cabRight, (spriteSizeX, spriteSizeY))
+        self.cabFly = pygame.image.load('images/cabbageFullBody.png')
+        self.cabFly = pygame.transform.scale(self.cabFly, (spriteSizeX, spriteSizeX))
+        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.isJump = False
+        self.leftPlayerWalk = False
+        self.rightPlayerWalk = True
+        self.jumpCount = 10
+        self.walkCount = 0
+        self.standing = True
+        self.bullets = []
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.posX = self.width//20
+        self.posY = self.height - 100
+        self.dir = 1
+        self.bulletCount = 0
+        
+    def draw(self):
+        if not(self.standing):
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.cabLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.cabRight, (self.posX, self.posY))
+                
+        else: #never lets man stand straight so he can shoot bullets
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.cabLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.cabRight, (self.posX,self.posY))
+                
+        if self.isJump:
+            self.screen.blit(self.cabFly, (self.posX, self.posY))
+            
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        
+        for bullet in self.bullets:
+            self.screen.blit(self.airball,(bullet[0],bullet[1]))
+
+class Katara(Character):
+    def __init__(self, screen):
+        super().__init__(screen)
+        spriteSizeX = 100
+        spriteSizeY = 60
+        self.katLeft = pygame.image.load('image/Katara.png')
+        self.katLeft = pygame.transform.scale(self.katLeft, (spriteSizeX, spriteSizeY))
+        self.katRight = pygame.image.load('images/Katara1.png')
+        self.katRight = pygame.transform.scale(self.katRight, (spriteSizeX, spriteSizeY))
+        self.katFly = pygame.image.load('images/katFly.png')
+        self.katFly = pygame.transform.scale(self.katFly, (spriteSizeX, spriteSizeX))
+        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.isJump = False
+        self.leftPlayerWalk = False
+        self.rightPlayerWalk = True
+        self.jumpCount = 10
+        self.walkCount = 0
+        self.standing = True
+        self.bullets = []
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.posX = self.width//20
+        self.posY = self.height - 100
+        self.dir = 1
+        self.bulletCount = 0
+        
+    def draw(self):
+        if not(self.standing):
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.katLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.katRight, (self.posX, self.posY))
+                
+        else: #never lets man stand straight so he can shoot bullets
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.katLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.katRight, (self.posX,self.posY))
+                
+        if self.isJump:
+            self.screen.blit(self.katFly, (self.posX, self.posY))
+            
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        
+        for bullet in self.bullets:
+            self.screen.blit(self.airball,(bullet[0],bullet[1]))
+class tyLee(Character):
+    def __init__(self, screen):
+        super().__init__(screen)
+        spriteSizeX = 100
+        spriteSizeY = 60
+        self.tyLeeLeft = pygame.image.load('images/tyLee.png')
+        self.tyLeeLeft = pygame.transform.scale(self.tyLeeLeft, (spriteSizeX, spriteSizeY))
+        self.tyLeeRight = pygame.image.load('images/tyLee.png')
+        self.tyLeeRight = pygame.transform.scale(self.tyLeeRight, (spriteSizeX, spriteSizeY))
+        self.tyLeeFly = pygame.image.load('images/tyLeeFly.png')
+        self.tyLeeFly = pygame.transform.scale(self.tyLeeFly, (spriteSizeX, spriteSizeX))
+        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.isJump = False
+        self.leftPlayerWalk = False
+        self.rightPlayerWalk = True
+        self.jumpCount = 10
+        self.walkCount = 0
+        self.standing = True
+        self.bullets = []
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.posX = self.width//20
+        self.posY = self.height - 100
+        self.dir = 1
+        self.bulletCount = 0
+        
+    def draw(self):
+        if not(self.standing):
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.tyLeeLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.tyLeeRight, (self.posX, self.posY))
+                
+        else: #never lets man stand straight so he can shoot bullets
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.tyLeeLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.tyLeeRight, (self.posX,self.posY))
+                
+        if self.isJump:
+            self.screen.blit(self.tyLeeFly, (self.posX, self.posY))
+            
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        
+        for bullet in self.bullets:
+            self.screen.blit(self.airball,(bullet[0],bullet[1]))
+
+
+class combustionMan(Character):
+    def __init__(self, screen):
+        super().__init__(screen)
+        spriteSizeX = 100
+        spriteSizeY = 60
+        self.cbLeft = pygame.image.load('images/combustionMan.png')
+        self.cbLeft = pygame.transform.scale(self.cbLeft, (spriteSizeX, spriteSizeY))
+        self.cbRight = pygame.image.load('images/combustionMan.png')
+        self.cbRight = pygame.transform.scale(self.cbRight, (spriteSizeX, spriteSizeY))
+        self.cbFly = pygame.image.load('images/combustionMan.png')
+        self.cbFly = pygame.transform.scale(self.cbFly, (spriteSizeX, spriteSizeX))
+        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.isJump = False
+        self.leftPlayerWalk = False
+        self.rightPlayerWalk = True
+        self.jumpCount = 10
+        self.walkCount = 0
+        self.standing = True
+        self.bullets = []
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.posX = self.width//20
+        self.posY = self.height - 100
+        self.dir = 1
+        self.bulletCount = 0
+        
+    def draw(self):
+        if not(self.standing):
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.cbLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.cbRight, (self.posX, self.posY))
+                
+        else: #never lets man stand straight so he can shoot bullets
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.cbLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.cbRight, (self.posX,self.posY))
+                
+        if self.isJump:
+            self.screen.blit(self.cbFly, (self.posX, self.posY))
+            
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        
+        for bullet in self.bullets:
+            self.screen.blit(self.airball,(bullet[0],bullet[1]))
+
+class Toph(Character):
+    def __init__(self, screen):
+        super().__init__(screen)
+        spriteSizeX = 100
+        spriteSizeY = 60
+        self.tophLeft = pygame.image.load('images/toph2.png')
+        self.tophLeft = pygame.transform.scale(self.tophLeft, (spriteSizeX, spriteSizeY))
+        self.tophRight = pygame.image.load('images/toph1.png')
+        self.tophRight = pygame.transform.scale(self.tophRight, (spriteSizeX, spriteSizeY))
+        self.tophFly = pygame.image.load('images/tophFly.png')
+        self.tophFly = pygame.transform.scale(self.tophFly, (spriteSizeX, spriteSizeX))
+        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.isJump = False
+        self.leftPlayerWalk = False
+        self.rightPlayerWalk = True
+        self.jumpCount = 10
+        self.walkCount = 0
+        self.standing = True
+        self.bullets = []
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.posX = self.width//20
+        self.posY = self.height - 100
+        self.dir = 1
+        self.bulletCount = 0
+        
+    def draw(self):
+        if not(self.standing):
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.tophLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.tophRight, (self.posX, self.posY))
+                
+        else: #never lets man stand straight so he can shoot bullets
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.tophLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.tophRight, (self.posX,self.posY))
+                
+        if self.isJump:
+            self.screen.blit(self.tophFly, (self.posX, self.posY))
+            
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        
+        for bullet in self.bullets:
+            self.screen.blit(self.airball,(bullet[0],bullet[1]))
+
 class Zuko(Character):
     def __init__(self, screen):
         super().__init__(screen)
@@ -137,7 +427,7 @@ class BottomBounds(object):
         pygame.draw.rect(screen, (255,255,255), (0, self.screenHeight-2, self.screenWidth, 2))
 
 
-class aangHealthBar(object):
+class mainHealthBar(object):
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
@@ -152,7 +442,7 @@ class aangHealthBar(object):
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x + self.score, self.y, self.width - self.score, self.height))
 
-class zukoHealthBar(object):
+class oppHealthBar(object):
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
@@ -200,14 +490,31 @@ class Menu(States):
         self.startScreen = pygame.image.load("images/start.png")
         self.startScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
         self.screen = pygame.display.set_mode((self.width, self.height))
+        self.charAangScreen = pygame.image.load("images/charAangSelect.jpg")
+        self.charAangScreen =pygame.transform.scale(self.charAangScreen,(self.width,self.height))
+        self.charKataraScreen = pygame.image.load("images/charKataraSelect.jpg")
+        self.charKataraScreen =pygame.transform.scale(self.charKataraScreen,(self.width,self.height))
+        self.charTophScreen = pygame.image.load("images/charTophSelect.jpg")
+        self.charTophScreen =pygame.transform.scale(self.charTophScreen,(self.width,self.height))        
+        self.charCabScreen = pygame.image.load("images/charCabbageSelect.jpg")
+        self.charCabScreen =pygame.transform.scale(self.charCabScreen,(self.width,self.height))
+        self.charCBManScreen = pygame.image.load("images/charCobmustionSelect.png")
+        self.charCBManScreen = pygame.transform.scale(self.charCBManScreen,(self.width,self.height))
+        self.charTyLeeScreen = pygame.image.load("images/charcTyLeeSelect.jpg")
+        self.charTyLeeScreen = pygame.transform.scale(self.charTyLeeScreen,(self.width,self.height))
+        self.charZukoScreen = pygame.image.load("images/charZukoSelect.jpg")
+        self.charZukoScreen = pygame.transform.scale(self.charZukoScreen,(self.width,self.height))
+        self.charMomoScreen = pygame.image.load("images/charAppaMomoSelect.jpg")
+        self.charMomoScreen = pygame.transform.scale(self.charMomoScreen,(self.width,self.height))
+
         self.endScreen = pygame.image.load("images/gameOver.png")
         self.endScreen =pygame.transform.scale(self.endScreen,(self.width,self.height))
         self.playScreen = pygame.image.load("images/waternation.jpg")
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
         self.player = Aang(self.screen)
         self.opponent = Zuko(self.screen)
-        self.aangHealthBar = aangHealthBar(0,0, self.width//2, 20)
-        self.zukoHealthBar = zukoHealthBar(self.width//2,0, self.width//2, 20)
+        self.mainHealthBar = mainHealthBar(0,0, self.width//2, 20)
+        self.oppHealthBar = oppHealthBar(self.width//2,0, self.width//2, 20)
         self.gameOver = False
         self.aangBulletList = []
         self.zukoBulletList = []
@@ -305,10 +612,10 @@ class Menu(States):
                 self.bulletSpeed = bulA.vel
                 if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y):
                     print('hit')
-                    self.zukoHealthBar.bulCount += 1
+                    self.oppHealthBar.bulCount += 1
                     self.aangBulletList.remove(bulA)
                     self.aangShot = False
-                    self.zukoHealthBar.score += 10
+                    self.oppHealthBar.score += 10
                 if bulA.x > self.width:
                     self.aangBulletList.remove(bulA)
                     self.aangShot = False
@@ -317,9 +624,9 @@ class Menu(States):
                 bulZ.x += bulZ.vel
                 if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y):
                     print('hit')
-                    self.aangHealthBar.bulCount += 1
+                    self.mainHealthBar.bulCount += 1
                     self.zukoBulletList.remove(bulZ)
-                    self.aangHealthBar.score += 10
+                    self.mainHealthBar.score += 10
                 if bulZ.x < 0:
                     self.zukoBulletList.remove(bulZ)
                     
@@ -349,7 +656,7 @@ class Menu(States):
                 else:
                     self.opponent.isJump = False
                     self.opponent.jumpCount = 10
-            if self.aangHealthBar.bulCount == 30 or self.zukoHealthBar.bulCount == 30:
+            if self.mainHealthBar.bulCount == 30 or self.oppHealthBar.bulCount == 30:
                 self.state = "endMode"
                 
             ### Hardcoded Defensive AI
@@ -373,8 +680,8 @@ class Menu(States):
 
             if self.player.posX - 20 < self.opponent.posX < self.player.posX + 20:
                 self.opponent.hitOnce = True
-                self.aangHealthBar.score += 10
-                self.zukoHealthBar.score += 10
+                self.mainHealthBar.score += 10
+                self.oppHealthBar.score += 10
                 print('yo')
         else:
             return
@@ -395,11 +702,10 @@ class Menu(States):
                 bulA.draw(self.screen)   
                                 
             pygame.display.update()
-            self.bottom.draw(self.screen)
             self.player.draw()
             self.opponent.draw()
-            self.aangHealthBar.draw(self.screen)
-            self.zukoHealthBar.draw(self.screen)
+            self.mainHealthBar.draw(self.screen)
+            self.oppHealthBar.draw(self.screen)
             self.timerFired()
 
 
