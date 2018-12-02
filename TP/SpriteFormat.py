@@ -57,6 +57,7 @@ class Aang(Character):
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
+        self.color = (255,0,0)
         
     def draw(self):
         if not(self.standing):
@@ -75,7 +76,7 @@ class Aang(Character):
             self.screen.blit(self.aangFly, (self.posX, self.posY))
             
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 2)
         
         for bullet in self.bullets:
             self.screen.blit(self.airball,(bullet[0],bullet[1]))
@@ -107,6 +108,7 @@ class Momo(Character):
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
+        self.color = (255,0,0)
         
     def draw(self):
         if not(self.standing):
@@ -125,7 +127,7 @@ class Momo(Character):
             self.screen.blit(self.momoFly, (self.posX, self.posY))
             
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 2)
         
         for bullet in self.bullets:
             self.screen.blit(self.airball,(bullet[0],bullet[1]))
@@ -155,7 +157,8 @@ class cabbageMan(Character):
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
-        
+        self.color = (255,0,0)
+
     def draw(self):
         if not(self.standing):
             if self.leftPlayerWalk == True:
@@ -173,7 +176,7 @@ class cabbageMan(Character):
             self.screen.blit(self.cabFly, (self.posX, self.posY))
             
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 2)
         
         for bullet in self.bullets:
             self.screen.blit(self.airball,(bullet[0],bullet[1]))
@@ -203,7 +206,7 @@ class Katara(Character):
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
-        
+        self.color = (255,0,0)        
     def draw(self):
         if not(self.standing):
             if self.leftPlayerWalk == True:
@@ -221,7 +224,7 @@ class Katara(Character):
             self.screen.blit(self.katFly, (self.posX, self.posY))
             
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 2)
         
         for bullet in self.bullets:
             self.screen.blit(self.airball,(bullet[0],bullet[1]))
@@ -250,7 +253,7 @@ class tyLee(Character):
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
-        
+        self.color = (255,0,0)                
     def draw(self):
         if not(self.standing):
             if self.leftPlayerWalk == True:
@@ -268,7 +271,7 @@ class tyLee(Character):
             self.screen.blit(self.tyLeeFly, (self.posX, self.posY))
             
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 2)
         
         for bullet in self.bullets:
             self.screen.blit(self.airball,(bullet[0],bullet[1]))
@@ -299,7 +302,7 @@ class combustionMan(Character):
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
-        
+        self.color = (255,0,0)        
     def draw(self):
         if not(self.standing):
             if self.leftPlayerWalk == True:
@@ -317,7 +320,7 @@ class combustionMan(Character):
             self.screen.blit(self.cbFly, (self.posX, self.posY))
             
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 2)
         
         for bullet in self.bullets:
             self.screen.blit(self.airball,(bullet[0],bullet[1]))
@@ -347,7 +350,7 @@ class Toph(Character):
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
-        
+        self.color = (255,0,0)        
     def draw(self):
         if not(self.standing):
             if self.leftPlayerWalk == True:
@@ -365,7 +368,7 @@ class Toph(Character):
             self.screen.blit(self.tophFly, (self.posX, self.posY))
             
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 2)
         
         for bullet in self.bullets:
             self.screen.blit(self.airball,(bullet[0],bullet[1]))
@@ -394,7 +397,7 @@ class Zuko(Character):
         self.dir = 1
         self.jumpTimes = 0
         self.bulletCount = 0
-        
+        self.color = (255,0,0)                
     def draw(self):
         if not(self.standing):
             if self.leftPlayerWalk == True:
@@ -409,7 +412,7 @@ class Zuko(Character):
                 self.screen.blit(self.zukoRight, (self.posX,self.posY))
     
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 2)
         
         for bullet in self.bullets:
             self.screen.blit(self.airball,(bullet[0],bullet[1]))
@@ -498,6 +501,11 @@ class Menu(States):
         self.width = 600
         self.height = 400
         self.state = "startMode"
+        self.oppCharge = 1
+        self.playerCharge = 1
+        self.move = False
+        self.playerMirrored = False
+        self.opponentMirrored = False
         self.startScreen = pygame.image.load("images/start.png")
         self.startScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
         self.screen = pygame.display.set_mode((self.width, self.height))
@@ -557,9 +565,9 @@ class Menu(States):
         self.mainHealthBar = mainHealthBar(0,0, self.width//2, 20)
         self.oppHealthBar = oppHealthBar(self.width//2,0, self.width//2, 20)
         self.gameOver = False
-        self.aangBulletList = []
-        self.zukoBulletList = []
-        self.aangShot = False
+        self.playerBulList = []
+        self.oppBulList = []
+        self.playerShot = False
         self.bulletSpeed = 0
         self.bulletPosX = 0
         self.bulletPosY = 0
@@ -624,11 +632,16 @@ class Menu(States):
                     self.player.dir = -1
                 if event.key == pygame.K_DOWN:
                     self.player.bulletCount += 1
-                    self.aangShot = True
+                    self.playerShot = True
                     self.player.bulletCount = 1
-                    if self.player.time % 10 == 0:
-                        self.aangBulletList.append(Bullet(self.player.posX, self.player.posY, 8, (0,0,0), self.player.dir))
-                    
+                    self.playerBulList.append(Bullet(self.player.posX, self.player.posY, 8, (0,0,0), self.player.dir))
+                
+                if event.key == pygame.K_SPACE: #player mirrors w/ space
+                    self.player.color = (255, 255, 153)
+                    self.playerMirrored = True
+                else:
+                    self.player.color = (255, 0, 0)
+
                 if event.key == pygame.K_LEFT and  self.player.posX > 0 :
                     self.player.posX -= self.player.vel
                     self.player.leftPlayerWalk = True
@@ -643,7 +656,8 @@ class Menu(States):
                 else:
                     self.player.standing = True
             
-                if not(self.player.isJump): #doesn't allow you to move up/down if jumping or jump again if jumping
+                #doesn't allow you to move up/down if jumping or jump again if jumping
+                if not(self.player.isJump): #player pressed up
                     if event.key == pygame.K_UP and self.player.posX > 0 and self.player.posX <= self.width - self.player.spriteSize:
                         self.player.isJump = True
                         self.player.standing = True
@@ -654,7 +668,7 @@ class Menu(States):
                     self.opponent.dir = -1
                 
                 if event.key == pygame.K_s:
-                    self.zukoBulletList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
+                    self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
                     
                 if event.key == pygame.K_a and  self.opponent.posX > 0 :
                     self.opponent.posX -= self.opponent.vel
@@ -676,48 +690,60 @@ class Menu(States):
                         self.opponent.standing = True
                 if event.key == pygame.K_r:
                     self.state = "startMode"
+
     
     def timerFired(self):
         if self.gameOver == False:
-            self.timeBar.tBTime += 3
+
+            self.timeBar.tBTime += 3 #timer bar moves
             if self.timeBar.width + self.timeBar.tBTime == self.width:
                 self.timeBar.tBTime = 0
-                
-            print(self.timeBar.tBTime)
+                self.move = True
+            else:
+                self.move = False
+
+            
             if self.player.bulletCount == 1 and self.bulletPosX == None:
                 self.player.time += 1
                 if self.player.time % 20 == 0:
                     self.player.bulletCount = 0
             self.opponent.time += 1
-            # print ("bCount", self.player.bulletCount)
-            # print ('time', self.player.time)
+          
             
-            for bulA in self.aangBulletList: 
+            for bulA in self.playerBulList: #detects if player is shot at
                 bulA.x += bulA.vel
                 print(self.bulletPosX)
                 self.bulletPosX = bulA.x
                 self.bulletPosY = bulA.y
                 self.bulletSpeed = bulA.vel
-                if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y):
+                if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y) and self.opponentMirrored == False: #normally hit
                     print('hit')
                     self.oppHealthBar.bulCount += 1
-                    self.aangBulletList.remove(bulA)
-                    self.aangShot = False
+                    self.playerBulList.remove(bulA)
+                    self.playerShot = False
                     self.oppHealthBar.score += 10
-                if bulA.x > self.width:
-                    self.aangBulletList.remove(bulA)
-                    self.aangShot = False
+                if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y) and self.opponentMirrored == True: #mirrored
+                    bulA.vel *= -1
+                if bulA.x > self.width or bulA.x < 0:
+                    self.playerBulList.remove(bulA)
+                    self.playerShot = False
                     
-            for bulZ in self.zukoBulletList: #removes bullets if it in vicinity of the enemy
+            for bulZ in self.oppBulList: #opponent shot
                 bulZ.x += bulZ.vel
-                if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y):
+                if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False:
                     print('hit')
-                    self.mainHealthBar.bulCount += 1
-                    self.zukoBulletList.remove(bulZ)
+                    self.mainHealthBar.bulCount += 1 #detects gameOver
+                    self.oppBulList.remove(bulZ)
                     self.mainHealthBar.score += 10
-                if bulZ.x < 0:
-                    self.zukoBulletList.remove(bulZ)
-                    
+                if bulZ.x < 0 or bulZ.x > self.width:
+                    self.oppBulList.remove(bulZ)
+                if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == True:
+                    bulZ.vel *= -1
+                if (self.opponent.hitbox[0] + 8 < bulZ.x and (self.opponent.hitbox[0] + 70) > bulZ.x) and (self.opponent.hitbox[1] < bulZ.y and (self.opponent.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == True: #deflected and opponent
+                    self.oppBulList.remove(bulZ)
+                    self.oppHealthBar.score += 10
+                    self.oppHealthBar.bulCount += 1 #detects gameOver
+
 
             if self.player.isJump: #when jumping
                 if self.player.jumpCount >= -10: 
@@ -748,19 +774,49 @@ class Menu(States):
                 self.state = "endMode"
                 
             ### Hardcoded Defensive AI
-            if self.player.isJump == True and self.aangShot == False: #avoids bullet if player shoots
-                self.opponent.isJump = True
-
-            if math.fabs(self.player.posX + 100) >= self.opponent.posX:
-                self.opponent.isJump = True
-            if self.aangShot == True:
-                if self.bulletSpeed > 5:
-                    if (self.bulletPosX + 50 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX and self.bulletPosY >= self.opponent.posY:
-                        self.opponent.isJump = True
-
+            if self.move == True:
+                jumpAI = True
+                mirrorAI  = (255, 255, 153)
+                chargeAI = 1
+                shootAI = "shot"
+                bigFireAI = "bigboi"
+                randomMove = random.choice([jumpAI, mirrorAI, shootAI, chargeAI])
+                if randomMove != mirrorAI:
+                    self.opponent.color = (255, 0, 0)
+                    self.opponentMirrored = False
+                if self.oppCharge == 0: #fix AI
+                    randomMove = chargeAI
+                    self.oppCharge += 1
                 else:
-                    if (self.bulletPosX + 20 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX:
+                    if randomMove == jumpAI: #free
                         self.opponent.isJump = True
+                    elif randomMove == mirrorAI and self.oppCharge >= 1: #mirror cost 1
+                        self.opponent.color = mirrorAI
+                        self.opponentMirrored = True
+                        self.oppCharge -= chargeAI
+                    elif randomMove == chargeAI: #free
+                        self.oppCharge += chargeAI
+                        return randomMove
+                    elif randomMove == shootAI and self.oppCharge >= 1: #shooting cost 1
+                        self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
+                        self.oppCharge -= chargeAI
+                    elif self.oppCharge == 5: #bigFire cost 5
+                        self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 60, (0,0,0), self.opponent.dir))
+                        randomMove = bigFireAI
+
+                        
+                print(randomMove)
+                print('opCharge', self.oppCharge)
+            #   if math.fabs(self.player.posX + 100) >= self.opponent.posX:
+            #     self.opponent.isJump = True
+            # if self.playerShot == True:
+            #     if self.bulletSpeed > 5:
+            #         if (self.bulletPosX + 50 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX and self.bulletPosY >= self.opponent.posY:
+            #             self.opponent.isJump = True
+
+            #       else:
+            #         if (self.bulletPosX + 20 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX:
+            #             self.opponent.isJump = True
 
             ### FIX WHEN TOUCHING
             if self.player.posX - 20 < self.opponent.posX < self.player.posX + 20:
@@ -797,9 +853,9 @@ class Menu(States):
         if self.state == "gameMode":
             self.screen.blit(self.playScreen,(0,0))
             
-            for bulZ in self.aangBulletList:
+            for bulZ in self.playerBulList:
                 bulZ.draw(self.screen)
-            for bulA in self.zukoBulletList:
+            for bulA in self.oppBulList:
                 bulA.draw(self.screen)   
                                 
             pygame.display.update()
