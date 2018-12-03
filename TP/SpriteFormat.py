@@ -712,16 +712,18 @@ class Menu(States):
         if self.plzSHOOT == True:
            self.playerMoveTracker.append(self.playerMove)
         print(self.playerMoveTracker)
-        
+        #create a queuing system that prepares the most likely attack
         curCount = 0
         bestCount = 0
         bestMove = 'nothing'
         prevMove = 'charge'
+        likelyList = []
         for curMove in range(len(self.playerMoveTracker)):
             if self.playerMoveTracker[curMove] == prevMove:
                 curCount += 1
             if curCount > bestCount:
                 bestMove = self.playerMoveTracker[curMove]
+                likelyList.append(bestMove)
             else:
                 curCount = 0
             
