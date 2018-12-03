@@ -713,6 +713,19 @@ class Menu(States):
            self.playerMoveTracker.append(self.playerMove)
         print(self.playerMoveTracker)
         
+        curCount = 0
+        bestCount = 0
+        bestMove = 'nothing'
+        prevMove = 'charge'
+        for curMove in range(len(self.playerMoveTracker)):
+            if self.playerMoveTracker[curMove] == prevMove:
+                curCount += 1
+            if curCount > bestCount:
+                bestMove = self.playerMoveTracker[curMove]
+            else:
+                curCount = 0
+            
+        ##Bullet Tracker
         for bulA in self.playerBulList: #detects if player is shot at
             bulA.x += bulA.vel
             print(self.bulletPosX)
@@ -726,8 +739,10 @@ class Menu(States):
                 self.playerShot = False
                 if bulA.rad > 50:
                     self.oppHealthBar.score += 40
+                    self.oppCharge = 0
                 else:
                     self.oppHealthBar.score += 20
+                    self.oppCharge -= 1
             if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y) and self.opponentMirrored == True: #mirrored
                 bulA.vel *= -1
             if bulA.x > self.width or bulA.x < 0:
@@ -740,14 +755,24 @@ class Menu(States):
                 print('aang hit')
                 self.mainHealthBar.bulCount += 1 #detects gameOver
                 self.oppBulList.remove(bulZ)
-                self.mainHealthBar.score += 20
+                if bulZ.rad > 50:
+                    self.mainHealthBar.score += 40
+                    self.playerCharge = 0
+                else:
+                    self.mainHealthBar.score += 20
+                    self.playerCharge -= 1
             if bulZ.x < 0 or bulZ.x > self.width:
                 self.oppBulList.remove(bulZ)
             if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == True:
                 bulZ.vel *= -1
             if (self.opponent.hitbox[0] + 8 < bulZ.x and (self.opponent.hitbox[0] + 70) > bulZ.x) and (self.opponent.hitbox[1] < bulZ.y and (self.opponent.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == True: #deflected and opponent
                 self.oppBulList.remove(bulZ)
-                self.oppHealthBar.score += 20
+                if bulZ.rad > 50:
+                    self.oppHealthBar.score += 40
+                    self.oppCharge = 0
+                else:
+                    self.oppHealthBar.score += 20   
+                    self.oppCharge -= 1
                 self.oppHealthBar.bulCount += 1 #detects gameOver
                 self.oppShot = False
             if (self.player.hitbox[0] < bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False: #mirrored
@@ -757,7 +782,7 @@ class Menu(States):
                 self.oppShot = False
 
         if self.player.isJump: #when jumping
-            if self.player.jumpCount >= -10: 
+            if self.player.jumpCount >= -10:
                 neg = 1 #start moving up 
                 if self.player.jumpCount < 0:
                     neg = -1 # moving down in the parabola
