@@ -691,6 +691,7 @@ class Menu(States):
             self.move = True
             self.playerChoosing = False
             self.plzSHOOT = True
+            print('shooting time')
         else:
             self.move = False
             self.plzSHOOT = False
@@ -753,7 +754,6 @@ class Menu(States):
                 for j in recommendedMove:
                     randomMove = j
             # print(randomMove)
-            print(self.playerMove)
         ## Executing AI
             if randomMove != mirrorAI:
                 self.opponent.color = (255, 165, 0)
@@ -780,7 +780,7 @@ class Menu(States):
     
                     
             # print(randomMove)
-            print('opCharge', self.oppCharge)
+            # print('opCharge', self.oppCharge)
 
 
 
@@ -833,11 +833,11 @@ class Menu(States):
                     self.oppCharge -= 1
                 self.oppHealthBar.bulCount += 1 #detects gameOver
                 self.oppShot = False
-            # if (self.player.hitbox[0] < bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False: #mirrored
-            #     bulZ.vel *= -1
-            # if bulZ.x > self.width or bulZ.x < 0:
-            #     self.oppBulList.remove(bulZ)
-            #     self.oppShot = False
+            if (self.player.hitbox[0] < bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False: #mirrored
+                bulZ.vel *= -1
+            if bulZ.x > self.width or bulZ.x < 0:
+                self.oppBulList.remove(bulZ)
+                self.oppShot = False
 
         if self.player.isJump: #when jumping
             if self.player.jumpCount >= -10:
@@ -869,46 +869,42 @@ class Menu(States):
 
         ### Executing Player Moves
         if self.plzSHOOT == True:
+            if self.playerCharge < 1 and (self.playerMove == "mirror" or self.playerMove == "shoot"):
+                self.playerMove = "charge"
+                self.playerNotEnough = True
+                
+            if self.playerMove == "jump":
+                self.player.isJump = True
+                self.player.standing = True
+                
+            if self.playerMove == "mirror" and self.playerCharge >= 1:
+                self.player.color = (255,255,255)
+                self.playerCharge -= 1
+                self.playerMirrored = True
+                
             if self.playerMove == "shoot" and self.playerCharge >= 1:
                 self.playerCharge -= 1
                 self.player.bulletCount += 1
                 self.playerShot = True
                 self.player.bulletCount = 1
                 self.playerBulList.append(Bullet(self.player.posX, self.player.posY, 8, (0,0,0), self.player.dir))
-
-            if self.playerMove == "mirror" and self.playerCharge >= 1:
-                self.player.color = (255,255,255)
-                self.playerCharge -= 1
-                self.playerMirrored = True
-                
-            if self.playerCharge < 1 and (self.playerMove == "mirror" or self.playerMove == "shoot"):
-                self.playerMove = "charge"
-                self.playerNotEnough = True
             
             if self.playerMove == "bigBomb" and self.playerCharge >= 5:
                 self.playerBulList.append(Bullet(self.player.posX, self.player.posY, 60, (0,0,0), self.player.dir))
                 self.playerCharge -= 5
                 
-            if self.playerMove == "jump":
-                self.player.isJump = True
-                self.player.standing = True
-            
             if self.playerMove == "charge":
                 self.playerCharge += 1
-            
-
-
-            
+      
         if self.playerCharge >= 1: #resets "notEnough"
             self.playerNotEnough = False
             # self.playerMove = "charge"
         if self.playerMove != "mirror": #resets color
             self.player.color = (255,165,0)
             self.playerMirrored = False
-            print('brhhh')
-        #   if math.fabs(self.player.posX + 100) >= self.opponent.posX:
-        #     self.opponent.isJump = True
-  
+            
+        print(self.playerMove)
+
         ## opponents
         if self.playerShot == True and self.oppMove == "shoot":
             print('dis dumb')
