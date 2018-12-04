@@ -787,10 +787,10 @@ class Menu(States):
         #     # self.opponent.isJump = False
         #     # print('opCharge', self.oppCharge)
         if self.move == True:
-            jumpAI = True
-            mirrorAI  = (255, 255, 153)
-            chargeAI = 1
-            shootAI = "shot"
+            jumpAI = "jump"
+            mirrorAI  = "mirror"
+            chargeAI = "charge"
+            shootAI = "shoot"
             bigFireAI = "bigboi"
             recommendedMove = []
         ## Countering Moves
@@ -803,7 +803,7 @@ class Menu(States):
                     recommendedMove.append(chargeAI)
                 elif playerCurMove == "jump":
                     recommendedMove.append(chargeAI)
-        # print(recommendedMove)
+            print(recommendedMove)
             randomMove = random.choice([jumpAI, mirrorAI, shootAI, chargeAI])
             if len(recommendedMove) == 1:
                 randomMove = random.choice([jumpAI, mirrorAI, shootAI, chargeAI])
@@ -811,6 +811,7 @@ class Menu(States):
                 for j in recommendedMove:
                     randomMove = j
             print(randomMove)
+        ## Executing AI
             if randomMove != mirrorAI:
                 self.opponent.color = (255, 0, 0)
                 self.opponentMirrored = False
@@ -818,14 +819,14 @@ class Menu(States):
                 randomMove = chargeAI
                 self.oppCharge += 1
             else:
-                if randomMove == jumpAI: #free
+                if randomMove == jumpAI: #jumping free
                     self.opponent.isJump = True
                 elif randomMove == mirrorAI and self.oppCharge >= 1: #mirror cost 1
-                    self.opponent.color = mirrorAI
+                    self.opponent.color = (255,165,0)
                     self.opponentMirrored = True
                     self.oppCharge -= chargeAI
-                elif randomMove == chargeAI: #free
-                    self.oppCharge += chargeAI
+                elif randomMove == chargeAI: # charging free
+                    self.oppCharge += 1
                     return randomMove
                 elif randomMove == shootAI and self.oppCharge >= 1: #shooting cost 1
                     self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
