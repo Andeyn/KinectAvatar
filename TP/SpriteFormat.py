@@ -726,16 +726,21 @@ class Menu(States):
                 likelyList.append(bestMove)
             else:
                 curCount = 0
-            
+        dictComboCount = {}
+        ## React to Tracking 
+        for curMove in self.playerMoveTracker:
+            dictComboCount[curMove] = dictComboCount.get(curMove, 0) + 1
+        print(dictComboCount)
+        
+        
         ##Bullet Tracker
         for bulA in self.playerBulList: #detects if player is shot at
             bulA.x += bulA.vel
-            print(self.bulletPosX)
             self.bulletPosX = bulA.x
             self.bulletPosY = bulA.y
             self.bulletSpeed = bulA.vel
             if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y) and self.opponentMirrored == False: #normally hit
-                print('hit')
+                print('opponent hit')
                 self.oppHealthBar.bulCount += 1
                 self.playerBulList.remove(bulA)
                 self.playerShot = False
@@ -747,14 +752,14 @@ class Menu(States):
                     self.oppCharge -= 1
             if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y) and self.opponentMirrored == True: #mirrored
                 bulA.vel *= -1
-            if bulA.x > self.width or bulA.x < 0:
+            if bulA.x > self.width or bulA.x < 0: #out of bounds
                 self.playerBulList.remove(bulA)
                 self.playerShot = False
                 
         for bulZ in self.oppBulList: #opponent's bullets that are shooting
             bulZ.x += bulZ.vel
             if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False:
-                print('aang hit')
+                print('player hit')
                 self.mainHealthBar.bulCount += 1 #detects gameOver
                 self.oppBulList.remove(bulZ)
                 if bulZ.rad > 50:
@@ -763,11 +768,11 @@ class Menu(States):
                 else:
                     self.mainHealthBar.score += 20
                     self.playerCharge -= 1
-            if bulZ.x < 0 or bulZ.x > self.width:
+            if bulZ.x < 0 or bulZ.x > self.width: #out of bounds
                 self.oppBulList.remove(bulZ)
             if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == True:
                 bulZ.vel *= -1
-            if (self.opponent.hitbox[0] + 8 < bulZ.x and (self.opponent.hitbox[0] + 70) > bulZ.x) and (self.opponent.hitbox[1] < bulZ.y and (self.opponent.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == True: #deflected and opponent
+            if (self.opponent.hitbox[0] < bulZ.x) and (self.opponent.hitbox[0] + 70 > bulZ.x) and (self.opponent.hitbox[1] < bulZ.y) and (self.opponent.hitbox[1] + 70 > bulZ.y) and self.playerMirrored == True: #deflected and opponent hit
                 self.oppBulList.remove(bulZ)
                 if bulZ.rad > 50:
                     self.oppHealthBar.score += 40
@@ -777,11 +782,11 @@ class Menu(States):
                     self.oppCharge -= 1
                 self.oppHealthBar.bulCount += 1 #detects gameOver
                 self.oppShot = False
-            if (self.player.hitbox[0] < bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False: #mirrored
-                bulZ.vel *= -1
-            if bulZ.x > self.width or bulZ.x < 0:
-                self.oppBulList.remove(bulZ)
-                self.oppShot = False
+            # if (self.player.hitbox[0] < bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False: #mirrored
+            #     bulZ.vel *= -1
+            # if bulZ.x > self.width or bulZ.x < 0:
+            #     self.oppBulList.remove(bulZ)
+            #     self.oppShot = False
 
         if self.player.isJump: #when jumping
             if self.player.jumpCount >= -10:
@@ -856,28 +861,28 @@ class Menu(States):
             if randomMove != mirrorAI:
                 self.opponent.color = (255,165,0)
                 self.opponentMirrored = False
-            if self.oppCharge == 0: #fix AI
+            if self.oppCharge < 1: #fix AI
                 randomMove = chargeAI
                 self.oppCharge += 1
-            else:
-                if randomMove == jumpAI: #free
-                    self.opponent.isJump = True
-                elif randomMove == mirrorAI and self.oppCharge >= 1: #mirror cost 1
-                    self.opponent.color = mirrorAI
-                    self.opponentMirrored = True
-                    self.oppCharge -= chargeAI
-                elif randomMove == chargeAI: #free
-                    self.oppCharge += chargeAI
-                    return randomMove
-                elif randomMove == shootAI and self.oppCharge >= 1: #shooting cost 1
-                    self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
-                    self.oppCharge -= chargeAI
-                elif self.oppCharge == 5: #bigFire cost 5
-                    self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 60, (0,0,0), self.opponent.dir))
-                    randomMove = bigFireAI
-                #reset player moves too
-                self.opponent.color = (255,165,0)
-                self.opponentMirrored = False
+            if randomMove == jumpAI: #free
+                self.opponent.isJump = True
+            elif randomMove == mirrorAI and self.oppCharge >= 1: #mirror cost 1
+                self.opponent.color = mirrorAI
+                self.opponentMirrored = True
+                self.oppCharge -= chargeAI
+            elif randomMove == chargeAI: #free
+                self.oppCharge += chargeAI
+                return randomMove
+                
+            elif randomMove == shootAI and self.oppCharge >= 1: #shooting cost 1
+                self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
+                self.oppCharge -= chargeAI
+            elif self.oppCharge == 5: #bigFire cost 5
+                self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 60, (0,0,0), self.opponent.dir))
+                randomMove = bigFireAI
+            #reset player moves too
+            self.opponent.color = (255,165,0)
+            self.opponentMirrored = False
 
             print(randomMove)
             print('opCharge', self.oppCharge)
@@ -936,6 +941,12 @@ class Menu(States):
             textCharge = basicfont.render('Your Charge:' + " " + str(self.playerCharge),True, self.black)
             textrect = textCharge.get_rect()
             textrect = ((8,58))
+            screen.blit(textCharge, textrect)
+            
+            basicfont = pygame.font.SysFont(None, 30) #print charge
+            textCharge = basicfont.render('CPU Charge:' + " " + str(self.oppCharge),True, self.black)
+            textrect = textCharge.get_rect()
+            textrect = ((self.width - 200,58))
             screen.blit(textCharge, textrect)
             
             if self.playerNotEnough == True:
