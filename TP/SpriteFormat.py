@@ -8,6 +8,7 @@ import math
 import sys
 
 pygame.init()
+pygame.mixer.init()
 
 class Character(pygame.sprite.Sprite):
     def __init__(self, screen):
@@ -484,6 +485,7 @@ class States(object):
 class Menu(States):
     def __init__(self):
         States.__init__(self)
+        self.themeSong = pygame.mixer.Sound("images/theme.wav")
         self.width = 600
         self.height = 400
         self.state = "startMode"
@@ -576,6 +578,7 @@ class Menu(States):
         if self.state == "startMode":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.state = "selectAang"
+                
         if event.type == pygame.KEYDOWN:
             if self.state == "selectAang":
                 if event.key == pygame.K_RIGHT:
@@ -734,7 +737,7 @@ class Menu(States):
                 
         for bulZ in self.oppBulList: #opponent's bullets that are shooting
             bulZ.x += bulZ.vel
-            if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False:
+            if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False: #normal hit
                 print('aang hit')
                 self.mainHealthBar.bulCount += 1 #detects gameOver
                 self.oppBulList.remove(bulZ)
@@ -746,10 +749,11 @@ class Menu(States):
                     self.playerCharge -= 1
             if bulZ.x < 0 or bulZ.x > self.width:
                 self.oppBulList.remove(bulZ)
-            if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == True:
+            if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == True: #deflected off aang
                 print('deflected')
-                bulZ.vel *= -1
-            if (self.opponent.hitbox[0] + 3 < bulZ.x and (self.opponent.hitbox[0] + 70) > bulZ.x) and (self.opponent.hitbox[1] < bulZ.y and (self.opponent.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == True: #deflected and opponent
+                bulZ.vel *= -1.5
+            elif (self.opponent.hitbox[0]< bulZ.x): #deflected and opponent
+                print('alskdfj')
                 self.oppBulList.remove(bulZ)
                 if bulZ.rad > 50:
                     self.oppHealthBar.score += 40
@@ -759,12 +763,7 @@ class Menu(States):
                     self.oppCharge -= 1
                 self.oppHealthBar.bulCount += 1 #detects gameOver
                 self.oppShot = False
-            # if (self.player.hitbox[0] < bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False: #mirrored
-            #     bulZ.vel *= -1
-            if bulZ.x > self.width or bulZ.x < 0:
-                print('hit wall')
-                self.oppBulList.remove(bulZ)
-                self.oppShot = False
+           
 
         if self.player.isJump: #when jumping
             if self.player.jumpCount >= -10:
@@ -773,7 +772,7 @@ class Menu(States):
                     neg = -1 # moving down in the parabola
                 #makes a quadratic parabola to illustrate diff speeds
                 #0.5 scales the jump smaller 
-                self.player.posY -= 0.75*(0.5 * (self.player.jumpCount ** 2) * neg)
+                self.player.posY -= (0.5 * (self.player.jumpCount ** 2) * neg)
                 self.player.jumpCount -= 1 #change heights
             else:
                 self.player.isJump = False
@@ -786,7 +785,7 @@ class Menu(States):
                     neg = -1 # moving down in the parabola
                 #makes a quadratic parabola to illustrate diff speeds
                 #0.5 scales the jump smaller 
-                self.opponent.posY -= 0.75*(0.5 * (self.opponent.jumpCount ** 2) * neg)
+                self.opponent.posY -= (0.5 * (self.opponent.jumpCount ** 2) * neg)
                 self.opponent.jumpCount -= 1 #change heights
             else:
                 self.opponent.isJump = False
@@ -846,15 +845,15 @@ class Menu(States):
         recommendedMove = []
         for playerCurMove in self.playerMoveTracker: #optimal defense moves
             if playerCurMove == "charge":
-                recommendedMove.append(shootAI)
+                recommendedMove.append(chargeAI)
             elif playerCurMove == "shoot":
                 recommendedMove.append(mirrorAI)
             elif playerCurMove == "mirror":
                 recommendedMove.append(shootAI)
             elif playerCurMove == "jump":
                 recommendedMove.append(chargeAI)
-        print(recommendedMove)
-        if len(recommendedMove) == 1: #randomMove
+        # print(recommendedMove)
+        if len(recommendedMove) <= 1: #randomMove
             self.oppMove = random.choice([jumpAI, mirrorAI, shootAI, chargeAI])
         else:
             for j in recommendedMove:
@@ -932,7 +931,8 @@ class Menu(States):
             self.screen.blit(self.endScreen, (0,0))
         if self.state == "gameMode":
             self.screen.blit(self.playScreen,(0,0))
-            
+            pygame.mixer.Sound.play(self.themeSong)
+            pygame.mixer.music.stop()
             basicfont = pygame.font.SysFont(None, 30) #print chosen Move
             textMove = basicfont.render('Your Move:' + " " + str(self.playerMove),True, self.black)
             textrect = textMove.get_rect()
