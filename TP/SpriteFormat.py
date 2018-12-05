@@ -44,7 +44,7 @@ class Aang(Character):
         self.aangFly = pygame.image.load('images/aangFly.png')
         self.aangFly = pygame.transform.scale(self.aangFly, (spriteSizeX, spriteSizeX))
         self.airball = pygame.image.load('images/airballs.png')
-        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.airball = pygame.transform.scale(self.airball, (75, 75))
         self.isJump = False
         self.leftPlayerWalk = False
         self.rightPlayerWalk = True
@@ -95,7 +95,7 @@ class Momo(Character):
         self.momoFly = pygame.image.load('images/momo.png')
         self.momoFly = pygame.transform.scale(self.momoFly, (spriteSizeX, spriteSizeX))
         self.airball = pygame.image.load('images/airballs.png')
-        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.airball = pygame.transform.scale(self.airball, (50, 50))
         self.isJump = False
         self.leftPlayerWalk = False
         self.rightPlayerWalk = True
@@ -382,8 +382,8 @@ class Zuko(Character):
         self.zukoRight = pygame.transform.scale(self.zukoRight, (spriteSizeX, spriteSizeY))
         self.zukoLeft = pygame.image.load('images/zuko.png')
         self.zukoLeft = pygame.transform.scale(self.zukoLeft, (spriteSizeX, spriteSizeY))
-        self.fireball = pygame.image.load('images/fireball.png')
-        self.fireball = pygame.transform.scale(self.fireball, (20, 20))
+        self.fireball = pygame.image.load('images/fireNationSymbol.png')
+        self.fireball = pygame.transform.scale(self.fireball, (50, 50))
         self.isJump = False
         self.leftPlayerWalk = True
         self.rightPlayerWalk = False
@@ -461,19 +461,21 @@ class chargeBar(object):
         pygame.draw.rect(win, self.color, (self.x , self.y, self.width + self.tBTime, self.height))
         
 class Bullet(object):
-    def __init__(self, x, y, radius, color, direction):
+    def __init__(self, win, x, y, image, direction, rad):
         self.x = x
         self.y = y
-        self.rad = radius
-        self.color = color
         self.dir = direction #which way the bullet shoots
         speed = 19
         self.vel = speed * self.dir #speed of bullet
         self.bulletList = []
-        
+        self.image = image
+        self.rad = rad
+        self.image = pygame.transform.scale(self.image, (self.rad, self.rad))
+
     def draw(self, win):
-        pygame.draw.circle(win, self.color, (int(self.x), int(self.y)), self.rad)
-        
+        # pygame.draw.circle(win, self.color, (int(self.x), int(self.y)), self.rad)
+        win.blit(self.image, (self.x,self.y))
+
 class States(object):
    def __init__(self):
        self.done = False
@@ -669,7 +671,7 @@ class Menu(States):
                     self.opponent.rightPlayerWalk = True
                    
                 if event.key == pygame.K_s:
-                    self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
+                    self.oppBulList.append(Bullet(self.screen, self.opponent.posX, self.opponent.posY, self.opponent.fireball, self.opponent.dir, 50))
                     
                 if event.key == pygame.K_a and  self.opponent.posX > 0:
                     self.opponent.posX -= self.opponent.vel
@@ -804,7 +806,7 @@ class Menu(States):
                 self.player.bulletCount += 1
                 self.playerShot = True
                 self.player.bulletCount = 1
-                self.playerBulList.append(Bullet(self.player.posX, self.player.posY, 8, (0,0,0), self.player.dir))
+                self.playerBulList.append(Bullet(self.screen, self.player.posX, self.player.posY, self.player.airball, self.player.dir, 50))
 
             if self.playerMove == "mirror" and self.playerCharge >= 1:
                 self.playerMirrored = True
@@ -816,7 +818,7 @@ class Menu(States):
                 self.playerNotEnough = True
             
             if self.playerMove == "bigBomb":
-                self.playerBulList.append(Bullet(self.player.posX, self.player.posY, 60, (0,0,0), self.player.dir))
+                self.playerBulList.append(Bullet(self.screen, self.player.posX, self.player.posY, self.player.airball, self.player.dir, 50))
             
             if self.playerMove == "jump":
                 self.player.isJump = True
@@ -905,10 +907,10 @@ class Menu(States):
                     self.oppCharge += 1
                     return self.oppMove
                 elif self.oppMove == shootAI and self.oppCharge >= 1: #shooting cost 1
-                    self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
+                    self.oppBulList.append(Bullet(self.screen, self.opponent.posX, self.opponent.posY, self.opponent.fireball, self.opponent.dir, 50))
                     self.oppCharge -= 1
                 elif self.oppCharge == 5: #bigFire cost 5
-                    self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 60, (0,0,0), self.opponent.dir))
+                    self.oppBulList.append(Bullet(self.screen, self.opponent.posX, self.opponent.posY, self.opponent.fireball, self.opponent.dir, 100))
                     self.oppMove = bigFireAI
                 #reset player moves too
                 self.opponent.color = (255,165,0)
@@ -989,20 +991,26 @@ class Menu(States):
                 textrectCC = textChooseCharge.get_rect()
                 textrectCC.center = ((self.width*0.5, self.height*0.7))
                 screen.blit(textChooseCharge, textrectCC)
-                
+            
+            if self.oppShot:
+                self.screen.blit(self.opponent.fireball, (self.width*3//4, self.height//2))
+                print('FIRE')
+            if self.playerShot:
+                self.screen.blit(self.player.airball, (self.width//4, self.height//2))
+                print('AIR')
             
             for bulZ in self.playerBulList:
                 bulZ.draw(self.screen)
             for bulA in self.oppBulList:
                 bulA.draw(self.screen)   
                                 
-            pygame.display.update()
             self.player.draw()
             self.opponent.draw()
             self.timeBar.draw(self.screen)
             self.mainHealthBar.draw(self.screen)
             self.oppHealthBar.draw(self.screen)
             self.timerFired()
+            pygame.display.update()
 
 
 class Game(States):

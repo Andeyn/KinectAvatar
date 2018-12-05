@@ -66,7 +66,7 @@ class Aang(Character):
         self.aangRight = pygame.transform.scale(self.aangRight, (spriteSizeX, spriteSizeY))
         self.aangFly = pygame.image.load('images/aangFly.png')
         self.aangFly = pygame.transform.scale(self.aangFly, (spriteSizeX, spriteSizeX))
-        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.image.load('images/AirShield.png')
         self.airball = pygame.transform.scale(self.airball, (20, 20))
         self.isJump = False
         self.leftPlayerWalk = False
