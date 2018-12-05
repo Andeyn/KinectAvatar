@@ -467,7 +467,7 @@ class Bullet(object):
         self.rad = radius
         self.color = color
         self.dir = direction #which way the bullet shoots
-        speed = 12
+        speed = 22
         self.vel = speed * self.dir #speed of bullet
         self.bulletList = []
         
@@ -489,6 +489,7 @@ class Menu(States):
         self.introVid = pygame.mixer.Sound("images/introVid.wav")
         self.width = 600
         self.height = 400
+        self.time = 0
         self.state = "startMode"
         self.oppCharge = 1
         self.playerCharge = 1
@@ -566,8 +567,10 @@ class Menu(States):
         self.playerShot = False
         self.oppShot = False
         self.bulletSpeed = 0
-        self.bulletPosX = 0
-        self.bulletPosY = 0
+        self.playerBulPosX = 0
+        self.playerBulPosY = 0
+        self.oppBulPosX = 0
+        self.oppBulPosY = 0
         self.opponent.dir = -1
         self.player.dir = 1
         
@@ -692,6 +695,7 @@ class Menu(States):
     
     def timerFired(self):        
         self.timeBar.tBTime += 8 #timer bar moves
+        self.time += 0.5
         if self.timeBar.width + self.timeBar.tBTime == self.width: #at the end
             self.timeBar.tBTime = 0
             self.move = True
@@ -705,19 +709,13 @@ class Menu(States):
         else:
             self.playerChoosing = False
         
-        if self.player.bulletCount == 1 and self.bulletPosX == None:
-            self.player.time += 1
-            if self.player.time % 20 == 0:
-                self.player.bulletCount = 0
-        
-        self.opponent.time += 1
         
         ##Bullet Tracker
         for bulA in self.playerBulList: #detects if player is shot at
             bulA.x += bulA.vel
-            print(self.bulletPosX)
-            self.bulletPosX = bulA.x
-            self.bulletPosY = bulA.y
+            print(self.playerBulPosX)
+            self.playerBulPosX = bulA.x
+            self.playerBulPosY = bulA.y
             self.bulletSpeed = bulA.vel
             if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y) and self.opponentMirrored == False: #normally hit
                 print('hit')
@@ -737,6 +735,8 @@ class Menu(States):
                 self.playerShot = False
                 
         for bulZ in self.oppBulList: #opponent's bullets that are shooting
+            self.oppBulPosX = bulZ.x
+            self.oppBulPosY = bulZ.y
             bulZ.x += bulZ.vel
             if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False: #normal hit
                 print('aang hit')
@@ -765,12 +765,11 @@ class Menu(States):
                 self.oppHealthBar.bulCount += 1 #detects gameOver
                 self.oppShot = False
            
-
-        if self.player.isJump: #when jumping
+        if self.player.isJump:
             if self.player.jumpCount >= -10:
-                neg = 1 #start moving up 
+                neg = 1.5 #start moving up 
                 if self.player.jumpCount < 0:
-                    neg = -1 # moving down in the parabola
+                    neg = -1.5 # moving down in the parabola
                 #makes a quadratic parabola to illustrate diff speeds
                 #0.5 scales the jump smaller 
                 self.player.posY -= (0.5 * (self.player.jumpCount ** 2) * neg)
@@ -791,6 +790,8 @@ class Menu(States):
             else:
                 self.opponent.isJump = False
                 self.opponent.jumpCount = 10
+            
+                    
         if self.mainHealthBar.bulCount == 10 or self.oppHealthBar.bulCount == 10:
             self.state = "endMode"
 
@@ -831,7 +832,7 @@ class Menu(States):
         #create a queuing system that prepares the most likely attack
         if self.plzSHOOT == True:
            self.playerMoveTracker.append(self.playerMove)
-        # print(self.playerMoveTracker)
+        print(self.playerMoveTracker)
         
         ## React to Tracking 
         dictComboCount = {}
@@ -852,7 +853,7 @@ class Menu(States):
             elif playerCurMove == "mirror":
                 recommendedMove.append(shootAI)
             elif playerCurMove == "jump":
-                recommendedMove.append(chargeAI)
+                recommendedMove.append(shootAI)
         # print(recommendedMove)
         if len(recommendedMove) <= 1: #randomMove
             self.oppMove = random.choice([jumpAI, mirrorAI, shootAI, chargeAI])
@@ -862,7 +863,8 @@ class Menu(States):
                 recommendedMove.remove(j)
         # print(self.oppMove)
 
-        if self.move == True:
+        ## Executing opponent move
+        if self.move == True: 
             if self.oppMove != mirrorAI:
                 self.opponent.color = (255,165,0)
                 self.opponentMirrored = False
@@ -891,19 +893,20 @@ class Menu(States):
         
     
         if self.playerShot == True and self.oppMove == "shoot":
+            print('hi')
             if self.bulletSpeed > 5:
-                if (self.bulletPosX + 50 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX and self.bulletPosY >= self.opponent.posY:
+                if (self.playerBulPosX + 50 >= self.opponent.posX) and self.playerBulPosX < self.opponent.posX and self.playerBulPosY >= self.opponent.posY:
                     self.opponent.isJump = True
                 else:
-                    if (self.bulletPosX + 20 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX:
+                    if (self.playerBulPosX + 20 >= self.opponent.posX) and self.playerBulPosX < self.opponent.posX:
                         self.opponent.isJump = True
     
         if self.oppShot == True and self.playerMove == "shoot": #jump dodge
             if self.bulletSpeed > 5:
-                if (self.bulletPosX + 50 >= self.player.posX) and self.bulletPosX < self.palyer.posX and self.bulletPosY >= self.player.posY:
+                if (self.playerBulPosX + 50 >= self.player.posX) and self.playerBulPosX < self.palyer.posX and self.playerBulPosY >= self.player.posY:
                     self.player.isJump = True
                 else:
-                    if (self.bulletPosX + 20 >= self.player.posX) and self.bulletPosX < self.player.posX:
+                    if (self.playerBulPosX + 20 >= self.player.posX) and self.playerBulPosX < self.player.posX:
                         self.player.isJump = True
 
     def update(self, screen, dt):
@@ -914,7 +917,6 @@ class Menu(States):
             self.screen.blit(self.startScreen,(0,0))
         if self.state == "selectAang":
             pygame.mixer.Sound.play(self.introVid)
-            pygame.mixer.music.stop()
             self.screen.blit(self.charAangScreen,(0,0))
         if self.state == "selectZuko":
             self.screen.blit(self.charZukoScreen,(0,0))            
@@ -935,7 +937,7 @@ class Menu(States):
         if self.state == "gameMode":
             self.screen.blit(self.playScreen,(0,0))
             pygame.mixer.Sound.play(self.themeSong)
-            pygame.mixer.music.stop()
+
             basicfont = pygame.font.SysFont(None, 30) #print chosen Move
             textMove = basicfont.render('Your Move:' + " " + str(self.playerMove),True, self.black)
             textrect = textMove.get_rect()
