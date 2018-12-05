@@ -502,6 +502,8 @@ class Menu(States):
         self.playerMove = "nothing"
         self.playerMirrored = False
         self.opponentMirrored = False
+        self.playerScoreIncr = 0
+        self.oppScoreIncr = 0
         self.black = (0,0,0)
         self.startScreen = pygame.image.load("images/start.png")
         self.startScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
@@ -666,7 +668,6 @@ class Menu(States):
                 if self.oppShot == True:
                     self.opponent.rightPlayerWalk = True
                    
-                # 
                 if event.key == pygame.K_s:
                     self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
                     
@@ -725,7 +726,7 @@ class Menu(States):
                     self.oppHealthBar.score += 40
                     self.oppCharge = 0
                 else:
-                    self.oppHealthBar.score += 20
+                    self.oppHealthBar.score += 10
                     self.oppCharge -= 1
             if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y) and self.opponentMirrored == True: #mirrored
                 bulA.vel *= -1
@@ -745,7 +746,8 @@ class Menu(States):
                     self.mainHealthBar.score += 40
                     self.playerCharge = 0
                 else:
-                    self.mainHealthBar.score += 20
+                    self.playerScoreIncr = self.mainHealthBar.score
+                    self.mainHealthBar.score += 10
                     self.playerCharge -= 1
             if bulZ.x < 0 or bulZ.x > self.width:
                 self.oppBulList.remove(bulZ)
@@ -759,7 +761,8 @@ class Menu(States):
                     self.oppHealthBar.score += 40
                     self.oppCharge = 0
                 else:
-                    self.oppHealthBar.score += 20   
+                    self.oppScoreIncr = self.oppHealthBar.score
+                    self.oppHealthBar.score += 10   
                     self.oppCharge -= 1
                 self.oppHealthBar.bulCount += 1 #detects gameOver
                 self.oppShot = False
@@ -779,9 +782,9 @@ class Menu(States):
                 
         if self.opponent.isJump: #when jumping
             if self.opponent.jumpCount >= -10: 
-                neg = 1 #start moving up 
+                neg = 1.5 #start moving up 
                 if self.opponent.jumpCount < 0:
-                    neg = -1 # moving down in the parabola
+                    neg = -1.5 # moving down in the parabola
                 #makes a quadratic parabola to illustrate diff speeds
                 #0.5 scales the jump smaller 
                 self.opponent.posY -= (0.5 * (self.opponent.jumpCount ** 2) * neg)
@@ -877,7 +880,12 @@ class Menu(States):
                 self.oppMove = j
                 recommendedMove.remove(j)
         # print(self.oppMove)
-
+        rewardDict = {}
+        if self.playerScoreIncr + 10 == self.mainHealthBar.score: #tells AI that the move worked, so do it again
+            rewardDict[self.oppMove] = rewardDict.get(self.oppMove, 0) + 1
+        if self.oppScoreIncr + 10 == self.oppHealthBar.score: #FIX: change the situation 
+            rewardDict[self.oppMove] = rewardDict.get(self.oppMove, 0) - 1
+        
         ## Executing opponent AI
         if self.move == True: 
             if self.oppMove != mirrorAI:
@@ -906,7 +914,6 @@ class Menu(States):
                 self.opponent.color = (255,165,0)
                 self.opponentMirrored = False
         
-    
         if self.playerShot == True and self.oppMove == "shoot":
             print('hi')
             if self.bulletSpeed > 5:
