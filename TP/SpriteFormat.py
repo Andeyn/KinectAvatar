@@ -53,7 +53,7 @@ class Aang(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//15
+        self.posX = self.width//10
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -104,7 +104,7 @@ class Momo(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//15
+        self.posX = self.width//10
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -153,7 +153,7 @@ class cabbageMan(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//15
+        self.posX = self.width//10
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -202,7 +202,7 @@ class Katara(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//15
+        self.posX = self.width//10
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -249,7 +249,7 @@ class tyLee(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//15
+        self.posX = self.width//10
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -298,7 +298,7 @@ class combustionMan(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//15
+        self.posX = self.width//10
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -346,7 +346,7 @@ class Toph(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//15
+        self.posX = self.width//10
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -467,7 +467,7 @@ class Bullet(object):
         self.rad = radius
         self.color = color
         self.dir = direction #which way the bullet shoots
-        speed = 22
+        speed = 19
         self.vel = speed * self.dir #speed of bullet
         self.bulletList = []
         
@@ -854,7 +854,7 @@ class Menu(States):
             if count > best:
                 best = count
                 mostProbMove.append(move)
-        print(mostProbMove)
+        # print(mostProbMove)
         jumpAI = "jump"
         mirrorAI  = "mirror"
         chargeAI = "charge"
@@ -869,7 +869,7 @@ class Menu(States):
                 recommendedMove.append(shootAI)
             elif playerCurMove == "jump":
                 recommendedMove.append(shootAI)
-        # print(recommendedMove)
+        print(recommendedMove)
         if len(recommendedMove) <= 5: #randomMove
             print('rando')
             self.oppMove = random.choice([jumpAI, mirrorAI, shootAI, chargeAI])
