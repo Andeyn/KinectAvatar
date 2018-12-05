@@ -931,7 +931,7 @@ class Menu(States):
         if self.state == "startMode":
             self.screen.blit(self.startScreen,(0,0))
         if self.state == "selectAang":
-            # pygame.mixer.Sound.play(self.introVid)
+            pygame.mixer.Sound.play(self.introVid)
             self.screen.blit(self.charAangScreen,(0,0))
         if self.state == "selectZuko":
             self.screen.blit(self.charZukoScreen,(0,0))            
@@ -951,7 +951,7 @@ class Menu(States):
             self.screen.blit(self.endScreen, (0,0))
         if self.state == "gameMode":
             self.screen.blit(self.playScreen,(0,0))
-            # pygame.mixer.Sound.play(self.themeSong)
+            pygame.mixer.Sound.play(self.themeSong)
 
             basicfont = pygame.font.SysFont(None, 30) #print chosen Move
             textMove = basicfont.render('Your Move:' + " " + str(self.playerMove),True, self.black)

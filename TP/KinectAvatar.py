@@ -625,6 +625,8 @@ class BodyGameRuntime(object):
         bytes.object = buffer_interface
         return bytes
     
+    def startIntroVid(self):
+        pygame.mixer.Sound.play(self.introVid)
 
     def drawCircle(self, joints, jointPoints, color, joint1, rad):
         joint1State = joints[joint1].TrackingState
@@ -656,6 +658,11 @@ class BodyGameRuntime(object):
 
     def clapUp(self, joints, jointPoints):
         self.clapOnce = True
+        self.LHX = jointPoints[PyKinectV2.JointType_HandLeft].x
+        self.RHX = jointPoints[PyKinectV2.JointType_HandRight].x
+        self.LHY = jointPoints[PyKinectV2.JointType_HandLeft].y
+        self.RHY = jointPoints[PyKinectV2.JointType_HandRight].y
+        
         self.spineX = jointPoints[PyKinectV2.JointType_SpineMid].x
         self.aboveHead = jointPoints[PyKinectV2.JointType_SpineShoulder].y
         if self.centerCollision and self.LHY < self.aboveHead:
@@ -697,17 +704,56 @@ class BodyGameRuntime(object):
         dist = math.sqrt(((self.RHX - self.LHX)**2)+ (self.RHY - self.LHY)**2)
         if dist <= 40:
             return True
-       
-            
-    def fireBend(self, joints, jointPoints, rad): 
-        bendList = []
 
+    def blockDectection(self, jointPoints):
+        self.LHX = jointPoints[PyKinectV2.JointType_HandLeft].x
+        self.RHX = jointPoints[PyKinectV2.JointType_HandRight].x
+        
+        self.LHY = jointPoints[PyKinectV2.JointType_HandLeft].y
+        self.RHY = jointPoints[PyKinectV2.JointType_HandRight].y
+        
+        self.rShoulderX = jointPoints[PyKinectV2.JointType_ShoulderRight].x
+        self.rShoulderY = jointPoints[PyKinectV2.JointType_ShoulderRight].y
+
+        dist = math.sqrt(((self.RHX - self.rShoulderX)**2)+ (self.RHY - self.rShoulderY)**2)
+        if dist <= 40:
+            return True
+    
+    def drawShield(self, joints, jointPoints):
+        print("shield!")
+        self.shoulderLX = jointPoints[PyKinectV2.JointType_ShoulderLeft].x
+        self.shoulderRY = jointPoints[PyKinectV2.JointType_ShoulderLeft].y
+        self.shoulderRX = jointPoints[PyKinectV2.JointType_ShoulderRight].x
+        self.hipRY = jointPoints[PyKinectV2.JointType_HipRight].y
+        self.SpineShoulderX = jointPoints[PyKinectV2.JointType_SpineShoulder].x
+        self.SpineShoulderY = jointPoints[PyKinectV2.JointType_SpineShoulder].y
+        self.SpineMidY = jointPoints[PyKinectV2.JointType_SpineMid].y
+        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.transform.scale(self.airball, (500, 500))
+        
+        # box = (self.SpineShoulderX + 10, self.SpineShoulderY, self.shoulderRX - self.SpineShoulderX, self.SpineMidY)
+        # pygame.draw.rect(self._frame_surface, pygame.color.THECOLORS['green'], box)
+        
+        self._frame_surface.blit(self.airball,(self.shoulderRX, self.shoulderRY))            
+
+    def fireBend(self, joints, jointPoints, rad): 
+        self.rad = rad
+        
         if self.timerStart % 10 == 0:
             self.rad += 10
         
         self.drawCircle(joints, jointPoints, pygame.color.THECOLORS["red"], PyKinectV2.JointType_HandRight, self.rad)
- 
-            
+        self.drawCircle(joints, jointPoints, pygame.color.THECOLORS["red"], PyKinectV2.JointType_HandLeft, self.rad)
+
+    def drawChargeHands(self, joints, jointPoints, rad):
+        self.rad = rad
+        
+        if self.timerStart % 10 == 0:
+            self.rad += 10
+        
+        self.drawCircle(joints, jointPoints, pygame.color.THECOLORS["orange"], PyKinectV2.JointType_HandRight, self.rad)
+        self.drawCircle(joints, jointPoints, pygame.color.THECOLORS["orange"], PyKinectV2.JointType_HandLeft, self.rad)
+    
     def waterBend(self, joints, jointPoints):
         self.change = (self.prevLHY - self.leftHY) + (self.prevRHY - self.rightHY)
         if math.isnan(self.change) or self.change < 0:
@@ -773,11 +819,8 @@ class BodyGameRuntime(object):
     def run(self): 
         while not self._done:
             
-            print(self.state)
-            if self.gameOver == True:
-                pygame.init()
+            pygame.init()
            
-                pygame.display.update()
             for event in pygame.event.get(): # User did something
                 if event.type == pygame.QUIT: # If user clicked close
                     self._done = True # Flag to exit loop
@@ -807,11 +850,11 @@ class BodyGameRuntime(object):
             self.screenWidth = self.kinect.color_frame_desc.Width
             self.screenHeight = self.kinect.color_frame_desc.Height
             
+            
             if self.state == "startMode":
                 self._frame_surface.blit(self.startScreen,(0,0))            
             
             elif self.state == "selectAang":
-                pygame.mixer.Sound.play(self.introVid)
                 self._frame_surface.blit(self.charAangScreen,(0,0))
             elif self.state == "selectZuko":
                 self._frame_surface.blit(self.charZukoScreen,(0,0))            
@@ -831,7 +874,7 @@ class BodyGameRuntime(object):
                 self._frame_surface.blit(self.endScreen, (0,0))
             elif self.state == "gameMode":
                 self._frame_surface.blit(self.playScreen,(0,0))
-                # pygame.mixer.Sound.play(self.themeSong)
+                pygame.mixer.Sound.play(self.themeSong)
     
                 basicfont = pygame.font.SysFont(None, 50) #print chosen Move
                 textMove = basicfont.render('Your Move:' + " " + str(self.playerMove),True, self.black)
@@ -869,12 +912,12 @@ class BodyGameRuntime(object):
                 for bulA in self.oppBulList:
                     bulA.draw(self._frame_surface)   
                                 
-            self.timeBar.draw(self._frame_surface)
-            self.mainHealthBar.draw(self._frame_surface)
-            self.oppHealthBar.draw(self._frame_surface)
-            self.player.draw()
-            self.opponent.draw()
-            pygame.display.update()
+                self.timeBar.draw(self._frame_surface)
+                self.mainHealthBar.draw(self._frame_surface)
+                self.oppHealthBar.draw(self._frame_surface)
+                self.player.draw()
+                self.opponent.draw()
+                pygame.display.update()
             
         
             ## body tracking
@@ -890,9 +933,15 @@ class BodyGameRuntime(object):
                     joint_points = self._kinect.body_joints_to_color_space(joints)
                     self.drawSpine(joints, joint_points)
                     self.drawCenterBox(joints, joint_points)
+                    self.drawCircPalms(joints, joint_points) #resting hand Position
                     if body.hand_right_state == 4: #lasso
+                        self.startIntroVid()
                         print("LASSO")
                         self.lassoDectection(joints, joint_points) #make blue circ
+                    elif self.clapUp(joints, joint_points):
+                        print('C UP')
+                        self.state = "gameMode"
+                    ## Splash screen
                     elif self.state == "startMode" and self.centerCollision(joint_points) == True: 
                         self.state = "selectAang"
                     elif self.state == "selectAang" and self.clapRight(joints, joint_points):
@@ -927,18 +976,18 @@ class BodyGameRuntime(object):
                         self.state = "selectAang"
                     elif self.state == "selectMomo" and self.clapLeft(joints, joint_points):
                             self.state = "selectKatara"
-                    elif self.clapUp(joints, joint_points) or self.startRealScreen == 3:
-                        print('C UP')
-                        self.state = "gameMode"
+
                     elif self.state == "gameMode":
                         if self.playerChoosing == True:
                             if body.hand_right_state == 4:
                                 self.playerMove = "shoot"
                             
-                            if self.centerCollision(joint_points): #player mirrors w/ space
+                            if self.blockDectection(joint_points): #player mirrors w/ space
+                                self.drawShield(joints, joint_points)
                                 self.playerMove = "mirror"
             
                             if self.playerCharge >= 5:
+                                self.fireBend(joints, joint_points, 40)
                                 self.playerMove = "bigBomb"
             
                             if self.clapLeft(joints, joint_points) and  self.player.posX > 0:
@@ -958,7 +1007,7 @@ class BodyGameRuntime(object):
                                 if self.clapUp(joints, joint_points):
                                     self.playerMove = "jump"
                             else:
-                                self.drawCircPalms(joints, joint_points) #orange
+                                self.drawChargeHands(joints, joint_points, 40)
                                 self.player.standing = True
                                 self.playerMove = "charge"
 
@@ -966,7 +1015,7 @@ class BodyGameRuntime(object):
             self.timeBar.tBTime += 55 #timer bar moves
             self.time += 0.5
             if self.timeBar.width + self.timeBar.tBTime > self.width: #at the end
-                self.startRealScreen += 1
+                # self.startRealScreen += 1
                 self.timeBar.tBTime = 0
                 self.move = True
                 self.playerChoosing = False
@@ -1230,7 +1279,8 @@ class BodyGameRuntime(object):
             surface_to_draw = pygame.transform.scale(self._frame_surface, (self._screen.get_width(), target_height))
             self._screen.blit(surface_to_draw, (0,0))
             surface_to_draw = None
-            
+            pygame.display.update()
+
             
             
             for event in pygame.event.get():
