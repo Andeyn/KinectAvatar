@@ -486,6 +486,7 @@ class Menu(States):
     def __init__(self):
         States.__init__(self)
         self.themeSong = pygame.mixer.Sound("images/theme.wav")
+        self.introVid = pygame.mixer.Sound("images/introVid.wav")
         self.width = 600
         self.height = 400
         self.state = "startMode"
@@ -912,6 +913,8 @@ class Menu(States):
         if self.state == "startMode":
             self.screen.blit(self.startScreen,(0,0))
         if self.state == "selectAang":
+            pygame.mixer.Sound.play(self.introVid)
+            pygame.mixer.music.stop()
             self.screen.blit(self.charAangScreen,(0,0))
         if self.state == "selectZuko":
             self.screen.blit(self.charZukoScreen,(0,0))            
