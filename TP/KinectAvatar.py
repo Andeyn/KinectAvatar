@@ -79,6 +79,8 @@ class Aang(Character):
         self.posX = self.width//20
         self.posY = 200
         self.dir = 1
+        self.bulletCount = 0
+        self.color = (255,165,0)
         
     def draw(self):
         if not(self.standing):
@@ -97,10 +99,11 @@ class Aang(Character):
             self.screen.blit(self.aangFly, (self.posX, self.posY))
             
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 5)
         
         for bullet in self.bullets:
             self.screen.blit(self.airball,(bullet[0],bullet[1]))
+
 
 class Zuko(Character):
     def __init__(self, screen):
@@ -124,7 +127,9 @@ class Zuko(Character):
         self.posX = 300
         self.posY = 200
         self.dir = 1
-        
+        self.jumpTimes = 0
+        self.bulletCount = 0
+        self.color = (255,165,0)                
     def draw(self):
         if not(self.standing):
             if self.leftPlayerWalk == True:
@@ -139,18 +144,308 @@ class Zuko(Character):
                 self.screen.blit(self.zukoRight, (self.posX,self.posY))
     
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        pygame.draw.rect(self.screen, (255,0,0), self.hitbox, 2)
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 5)
         
         for bullet in self.bullets:
             self.screen.blit(self.airball,(bullet[0],bullet[1]))
 
-class aangHealthBar(object):
+class Momo(Character):
+    def __init__(self, screen):
+        super().__init__(screen)
+        spriteSizeX = 100
+        spriteSizeY = 60
+        self.momoLeft = pygame.image.load('images/momo.png')
+        self.momoLeft = pygame.transform.scale(self.momoLeft, (spriteSizeX, spriteSizeY))
+        self.momoRight = pygame.image.load('images/momo.png')
+        self.momoRight = pygame.transform.scale(self.momoRight, (spriteSizeX, spriteSizeY))
+        self.momoFly = pygame.image.load('images/momo.png')
+        self.momoFly = pygame.transform.scale(self.momoFly, (spriteSizeX, spriteSizeX))
+        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.isJump = False
+        self.leftPlayerWalk = False
+        self.rightPlayerWalk = True
+        self.jumpCount = 10
+        self.walkCount = 0
+        self.standing = True
+        self.bullets = []
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.posX = self.width//10
+        self.posY = self.height - 100
+        self.dir = 1
+        self.bulletCount = 0
+        self.color = (255,165,0)
+        
+    def draw(self):
+        if not(self.standing):
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.momoLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.momoRight, (self.posX, self.posY))
+                
+        else: #never lets man stand straight so he can shoot bullets
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.momoLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.momoRight, (self.posX,self.posY))
+                
+        if self.isJump:
+            self.screen.blit(self.momoFly, (self.posX, self.posY))
+            
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 5)
+        
+        for bullet in self.bullets:
+            self.screen.blit(self.airball,(bullet[0],bullet[1]))
+
+class cabbageMan(Character):
+    def __init__(self, screen):
+        super().__init__(screen)
+        spriteSizeX = 100
+        spriteSizeY = 60
+        self.cabLeft = pygame.image.load('images/cabbageFullBody.png')
+        self.cabLeft = pygame.transform.scale(self.cabLeft, (spriteSizeX, spriteSizeY))
+        self.cabRight = pygame.image.load('images/cabbageFullBody.png')
+        self.cabRight = pygame.transform.scale(self.cabRight, (spriteSizeX, spriteSizeY))
+        self.cabFly = pygame.image.load('images/cabbageFullBody.png')
+        self.cabFly = pygame.transform.scale(self.cabFly, (spriteSizeX, spriteSizeX))
+        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.isJump = False
+        self.leftPlayerWalk = False
+        self.rightPlayerWalk = True
+        self.jumpCount = 10
+        self.walkCount = 0
+        self.standing = True
+        self.bullets = []
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.posX = self.width//10
+        self.posY = self.height - 100
+        self.dir = 1
+        self.bulletCount = 0
+        self.color = (255,165,0)
+
+    def draw(self):
+        if not(self.standing):
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.cabLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.cabRight, (self.posX, self.posY))
+                
+        else: #never lets man stand straight so he can shoot bullets
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.cabLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.cabRight, (self.posX,self.posY))
+                
+        if self.isJump:
+            self.screen.blit(self.cabFly, (self.posX, self.posY))
+            
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 5)
+        
+        for bullet in self.bullets:
+            self.screen.blit(self.airball,(bullet[0],bullet[1]))
+
+class Katara(Character):
+    def __init__(self, screen):
+        super().__init__(screen)
+        spriteSizeX = 100
+        spriteSizeY = 60
+        self.katLeft = pygame.image.load('image/Katara.png')
+        self.katLeft = pygame.transform.scale(self.katLeft, (spriteSizeX, spriteSizeY))
+        self.katRight = pygame.image.load('images/Katara1.png')
+        self.katRight = pygame.transform.scale(self.katRight, (spriteSizeX, spriteSizeY))
+        self.katFly = pygame.image.load('images/katFly.png')
+        self.katFly = pygame.transform.scale(self.katFly, (spriteSizeX, spriteSizeX))
+        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.isJump = False
+        self.leftPlayerWalk = False
+        self.rightPlayerWalk = True
+        self.jumpCount = 10
+        self.walkCount = 0
+        self.standing = True
+        self.bullets = []
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.posX = self.width//10
+        self.posY = self.height - 100
+        self.dir = 1
+        self.bulletCount = 0
+        self.color = (255,165,0)        
+    def draw(self):
+        if not(self.standing):
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.katLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.katRight, (self.posX, self.posY))
+                
+        else: #never lets man stand straight so he can shoot bullets
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.katLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.katRight, (self.posX,self.posY))
+                
+        if self.isJump:
+            self.screen.blit(self.katFly, (self.posX, self.posY))
+            
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 5)
+        
+        for bullet in self.bullets:
+            self.screen.blit(self.airball,(bullet[0],bullet[1]))
+class tyLee(Character):
+    def __init__(self, screen):
+        super().__init__(screen)
+        spriteSizeX = 100
+        spriteSizeY = 60
+        self.tyLeeLeft = pygame.image.load('images/tyLee.png')
+        self.tyLeeLeft = pygame.transform.scale(self.tyLeeLeft, (spriteSizeX, spriteSizeY))
+        self.tyLeeRight = pygame.image.load('images/tyLee.png')
+        self.tyLeeRight = pygame.transform.scale(self.tyLeeRight, (spriteSizeX, spriteSizeY))
+        self.tyLeeFly = pygame.image.load('images/tyLeeFly.png')
+        self.tyLeeFly = pygame.transform.scale(self.tyLeeFly, (spriteSizeX, spriteSizeX))
+        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.isJump = False
+        self.leftPlayerWalk = False
+        self.rightPlayerWalk = True
+        self.jumpCount = 10
+        self.walkCount = 0
+        self.standing = True
+        self.bullets = []
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.posX = self.width//10
+        self.posY = self.height - 100
+        self.dir = 1
+        self.bulletCount = 0
+        self.color = (255,165,0)                
+    def draw(self):
+        if not(self.standing):
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.tyLeeLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.tyLeeRight, (self.posX, self.posY))
+                
+        else: #never lets man stand straight so he can shoot bullets
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.tyLeeLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.tyLeeRight, (self.posX,self.posY))
+                
+        if self.isJump:
+            self.screen.blit(self.tyLeeFly, (self.posX, self.posY))
+            
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 5)
+        
+        for bullet in self.bullets:
+            self.screen.blit(self.airball,(bullet[0],bullet[1]))
+
+
+class combustionMan(Character):
+    def __init__(self, screen):
+        super().__init__(screen)
+        spriteSizeX = 100
+        spriteSizeY = 60
+        self.cbLeft = pygame.image.load('images/combustionMan.png')
+        self.cbLeft = pygame.transform.scale(self.cbLeft, (spriteSizeX, spriteSizeY))
+        self.cbRight = pygame.image.load('images/combustionMan.png')
+        self.cbRight = pygame.transform.scale(self.cbRight, (spriteSizeX, spriteSizeY))
+        self.cbFly = pygame.image.load('images/combustionMan.png')
+        self.cbFly = pygame.transform.scale(self.cbFly, (spriteSizeX, spriteSizeX))
+        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.isJump = False
+        self.leftPlayerWalk = False
+        self.rightPlayerWalk = True
+        self.jumpCount = 10
+        self.walkCount = 0
+        self.standing = True
+        self.bullets = []
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.posX = self.width//10
+        self.posY = self.height - 100
+        self.dir = 1
+        self.bulletCount = 0
+        self.color = (255,165,0)        
+    def draw(self):
+        if not(self.standing):
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.cbLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.cbRight, (self.posX, self.posY))
+                
+        else: #never lets man stand straight so he can shoot bullets
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.cbLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.cbRight, (self.posX,self.posY))
+                
+        if self.isJump:
+            self.screen.blit(self.cbFly, (self.posX, self.posY))
+            
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 5)
+        
+        for bullet in self.bullets:
+            self.screen.blit(self.airball,(bullet[0],bullet[1]))
+
+class Toph(Character):
+    def __init__(self, screen):
+        super().__init__(screen)
+        spriteSizeX = 100
+        spriteSizeY = 60
+        self.tophLeft = pygame.image.load('images/toph2.png')
+        self.tophLeft = pygame.transform.scale(self.tophLeft, (spriteSizeX, spriteSizeY))
+        self.tophRight = pygame.image.load('images/toph1.png')
+        self.tophRight = pygame.transform.scale(self.tophRight, (spriteSizeX, spriteSizeY))
+        self.tophFly = pygame.image.load('images/tophFly.png')
+        self.tophFly = pygame.transform.scale(self.tophFly, (spriteSizeX, spriteSizeX))
+        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.transform.scale(self.airball, (20, 20))
+        self.isJump = False
+        self.leftPlayerWalk = False
+        self.rightPlayerWalk = True
+        self.jumpCount = 10
+        self.walkCount = 0
+        self.standing = True
+        self.bullets = []
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.posX = self.width//10
+        self.posY = self.height - 100
+        self.dir = 1
+        self.bulletCount = 0
+        self.color = (255,165,0)        
+    def draw(self):
+        if not(self.standing):
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.tophLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.tophRight, (self.posX, self.posY))
+                
+        else: #never lets man stand straight so he can shoot bullets
+            if self.leftPlayerWalk == True:
+                self.screen.blit(self.tophLeft, (self.posX, self.posY))
+            elif self.rightPlayerWalk == True:
+                self.screen.blit(self.tophRight, (self.posX,self.posY))
+                
+        if self.isJump:
+            self.screen.blit(self.tophFly, (self.posX, self.posY))
+            
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        pygame.draw.rect(self.screen, self.color, self.hitbox, 5)
+        
+        for bullet in self.bullets:
+            self.screen.blit(self.airball,(bullet[0],bullet[1]))
+
+class mainHealthBar(object):
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        self.color = (255, 0, 0)
+        self.color = (255,0,0)
         self.score = 0
         self.x = self.x + self.score
         self.width =  self.width - self.score
@@ -159,7 +454,7 @@ class aangHealthBar(object):
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x + self.score, self.y, self.width - self.score, self.height))
 
-class zukoHealthBar(object):
+class oppHealthBar(object):
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
@@ -173,6 +468,19 @@ class zukoHealthBar(object):
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x , self.y, self.width - self.score, self.height))
 
+class chargeBar(object):
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = (173,255,47)
+        self.score = 0
+        self.tBTime = 0
+
+    def draw(self, win):
+        pygame.draw.rect(win, self.color, (self.x , self.y, self.width + self.tBTime, self.height))
+        
 class Bullet(object):
     def __init__(self, x, y, radius, color, direction):
         self.x = x
@@ -180,7 +488,7 @@ class Bullet(object):
         self.rad = radius
         self.color = color
         self.dir = direction #which way the bullet shoots
-        speed = random.randint(3, 10)
+        speed = 19
         self.vel = speed * self.dir #speed of bullet
         self.bulletList = []
         
@@ -223,7 +531,7 @@ class BodyGameRuntime(object):
         self.prevRHX = 0
         self.prevLHY = 0
         self.prevRHY = 0
-        
+        self.clapOnce = False
 
         self.rad = 40
         pygame.display.set_caption("Andey's Kinect")
@@ -240,30 +548,71 @@ class BodyGameRuntime(object):
         self._bodies = None
 
         self.square = (0,0, 50, 50)
-    
+        ## Pygame Init
         self.width = 1000
         self.height = 800
         self.draftPlayers = False
+        self.themeSong = pygame.mixer.Sound("images/theme.wav")
+        self.introVid = pygame.mixer.Sound("images/introVid.wav")
         self.time = 0
         self.state = "startMode"
+        self.oppCharge = 1
+        self.playerCharge = 1
+        self.move = False
+        self.playerMoveTracker = []
+        self.startRealScreen = 0
+        self.playerChoosing = True
+        self.playerNotEnough = False
+        self.plzSHOOT = False
+        self.oppMove = "nothing"
+        self.playerMove = "nothing"
+        self.playerMirrored = False
+        self.opponentMirrored = False
+        self.black = (0,0,0)
         self.startScreen = pygame.image.load("images/start.png")
         self.startScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
         self.screen = pygame.display.set_mode((self.width, self.height))
+        ### Character Selection
+        self.charAangScreen = pygame.image.load("images/charAangSelect.jpg")
+        self.charAangScreen =pygame.transform.scale(self.charAangScreen,(self.width,self.height))
+        self.charKataraScreen = pygame.image.load("images/charKataraSelect.jpg")
+        self.charKataraScreen =pygame.transform.scale(self.charKataraScreen,(self.width,self.height))
+        self.charTophScreen = pygame.image.load("images/charTophSelect.jpg")
+        self.charTophScreen =pygame.transform.scale(self.charTophScreen,(self.width,self.height))        
+        self.charCabScreen = pygame.image.load("images/charCabbageSelect.jpg")
+        self.charCabScreen =pygame.transform.scale(self.charCabScreen,(self.width,self.height))
+        self.charCBManScreen = pygame.image.load("images/charCombustionSelect.png")
+        self.charCBManScreen = pygame.transform.scale(self.charCBManScreen,(self.width,self.height))
+        self.charTyLeeScreen = pygame.image.load("images/charTyLeeSelect.jpg")
+        self.charTyLeeScreen = pygame.transform.scale(self.charTyLeeScreen,(self.width,self.height))
+        self.charZukoScreen = pygame.image.load("images/charZukoSelect.jpg")
+        self.charZukoScreen = pygame.transform.scale(self.charZukoScreen,(self.width,self.height))
+        self.charMomoScreen = pygame.image.load("images/charAppaMomoSelect.jpg")
+        self.charMomoScreen = pygame.transform.scale(self.charMomoScreen,(self.width,self.height))
+        
         self.endScreen = pygame.image.load("images/gameOver.png")
         self.endScreen =pygame.transform.scale(self.endScreen,(self.width,self.height))
         self.playScreen = pygame.image.load("images/waternation.jpg")
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
+    
         self.player = Aang(self.screen)
         self.opponent = Zuko(self.screen)
-        self.aangHealthBar = aangHealthBar(0,0, self.width//2, 20)
-        self.zukoHealthBar = zukoHealthBar(self.width//2,0, self.width//2, 20)
+        
+        self.timeBar = chargeBar(0, 20, 0, 20)
+        self.mainHealthBar = mainHealthBar(0,0, self.width//2, 20)
+        self.oppHealthBar = oppHealthBar(self.width//2,0, self.width//2, 20)
         self.gameOver = False
-        self.aangBulletList = []
-        self.zukoBulletList = []
-        self.aangShot = False
+        self.playerBulList = []
+        self.oppBulList = []
+        self.playerShot = False
+        self.oppShot = False
         self.bulletSpeed = 0
-        self.bulletPosX = 0
-        self.bulletPosY = 0
+        self.playerBulPosX = 0
+        self.playerBulPosY = 0
+        self.oppBulPosX = 0
+        self.oppBulPosY = 0
+        self.opponent.dir = -1
+        self.player.dir = 1
         
         
     def surface_to_array(surface):
@@ -291,12 +640,14 @@ class BodyGameRuntime(object):
             
     
     def clapRight(self, joints,jointPoints):
+        self.clapOnce = True
         self.spineX = jointPoints[PyKinectV2.JointType_SpineMid].x
         self.aboveHead = jointPoints[PyKinectV2.JointType_SpineShoulder].y
         if self.centerCollision and self.LHX >  self.spineX:
             print("right")
             return True
     def clapLeft(self, joints, jointPoints):
+        self.clapOnce = True
         self.spineX = jointPoints[PyKinectV2.JointType_SpineMid].x
         self.aboveHead = jointPoints[PyKinectV2.JointType_SpineShoulder].y
         if self.centerCollision and self.RHX < self.spineX:
@@ -304,6 +655,7 @@ class BodyGameRuntime(object):
             return True
 
     def clapUp(self, joints, jointPoints):
+        self.clapOnce = True
         self.spineX = jointPoints[PyKinectV2.JointType_SpineMid].x
         self.aboveHead = jointPoints[PyKinectV2.JointType_SpineShoulder].y
         if self.centerCollision and self.LHY < self.aboveHead:
@@ -335,6 +687,8 @@ class BodyGameRuntime(object):
         
     def centerCollision(self, jointPoints):        
         #if joint.x and joint.y is within a specific range, return true
+        
+        self.clapOnce = True
         self.LHX = jointPoints[PyKinectV2.JointType_HandLeft].x
         self.RHX = jointPoints[PyKinectV2.JointType_HandRight].x
         
@@ -418,13 +772,11 @@ class BodyGameRuntime(object):
 
     def run(self): 
         while not self._done:
+            
+            print(self.state)
             if self.gameOver == True:
                 pygame.init()
-            
-                self.bottom.draw(self._frame_surface)
-                self.player.draw()
-                self.opponent.draw()
-                self.timerFired()
+           
                 pygame.display.update()
             for event in pygame.event.get(): # User did something
                 if event.type == pygame.QUIT: # If user clicked close
@@ -455,14 +807,77 @@ class BodyGameRuntime(object):
             self.screenWidth = self.kinect.color_frame_desc.Width
             self.screenHeight = self.kinect.color_frame_desc.Height
             
-            # pygame.draw.rect(self._frame_surface, (255, 255, 255), [0,0, self.screenWidth, self.screenHeight])
             if self.state == "startMode":
                 self._frame_surface.blit(self.startScreen,(0,0))            
+            
+            elif self.state == "selectAang":
+                pygame.mixer.Sound.play(self.introVid)
+                self._frame_surface.blit(self.charAangScreen,(0,0))
+            elif self.state == "selectZuko":
+                self._frame_surface.blit(self.charZukoScreen,(0,0))            
+            elif self.state == "selectToph":
+                self._frame_surface.blit(self.charTophScreen,(0,0))
+            elif self.state == "selectTyLee":
+                self._frame_surface.blit(self.charTyLeeScreen,(0,0))
+            elif self.state == "selectKatara":
+                self._frame_surface.blit(self.charKataraScreen,(0,0))
+            elif self.state == "selectCabbage":
+                self._frame_surface.blit(self.charCabScreen,(0,0))
+            elif self.state == "selectCombustion":
+                self._frame_surface.blit(self.charCBManScreen,(0,0))
+            elif self.state == "selectMomo":
+                self._frame_surface.blit(self.charMomoScreen,(0,0))
+            elif self.state =="endMode":
+                self._frame_surface.blit(self.endScreen, (0,0))
             elif self.state == "gameMode":
-                self._frame_surface.blit(self.playScreen, (0,0))
-                self.draftPlayers = True
+                self._frame_surface.blit(self.playScreen,(0,0))
+                # pygame.mixer.Sound.play(self.themeSong)
+    
+                basicfont = pygame.font.SysFont(None, 50) #print chosen Move
+                textMove = basicfont.render('Your Move:' + " " + str(self.playerMove),True, self.black)
+                textrect = textMove.get_rect()
+                textrect = ((8,42))
+                self._frame_surface.blit(textMove, textrect)
+    
+                basicfont = pygame.font.SysFont(None, 50) #print charge
+                textCharge = basicfont.render('Your Charge:' + " " + str(self.playerCharge),True, self.black)
+                textrect = textCharge.get_rect()
+                textrect = ((8,58))
+                self._frame_surface.blit(textCharge, textrect)
                 
-            #  draw skeletons to _frame_surface
+                basicfont = pygame.font.SysFont(None, 50) #print charge
+                textCharge = basicfont.render('CPU Charge:' + " " + str(self.oppCharge),True, self.black)
+                textrect = textCharge.get_rect()
+                textrect = ((self.width - 200,58))
+                self._frame_surface.blit(textCharge, textrect)
+                
+                
+                if self.playerNotEnough == True:
+                    basicfont = pygame.font.SysFont(None, 30) #print not enough!
+                    textNotEnough = basicfont.render('Not enough Charge!',True, (255,165,0))
+                    textrectNE = textNotEnough.get_rect()
+                    textrectNE.center = ((self.width*0.5,self.height*0.75))
+                    self._frame_surface.blit(textNotEnough, textrectNE)
+                    textChooseCharge = basicfont.render('Choose Charge!', True, (255,165,0))
+                    textrectCC = textChooseCharge.get_rect()
+                    textrectCC.center = ((self.width*0.5, self.height*0.7))
+                    self._frame_surface.blit(textChooseCharge, textrectCC)
+                    
+                
+                for bulZ in self.playerBulList:
+                    bulZ.draw(self._frame_surface)
+                for bulA in self.oppBulList:
+                    bulA.draw(self._frame_surface)   
+                                
+            self.timeBar.draw(self._frame_surface)
+            self.mainHealthBar.draw(self._frame_surface)
+            self.oppHealthBar.draw(self._frame_surface)
+            self.player.draw()
+            self.opponent.draw()
+            pygame.display.update()
+            
+        
+            ## body tracking
             if self._bodies is not None: 
                 for i in range(0, self._kinect.max_body_count):
                     body = self._bodies.bodies[i]
@@ -475,42 +890,163 @@ class BodyGameRuntime(object):
                     joint_points = self._kinect.body_joints_to_color_space(joints)
                     self.drawSpine(joints, joint_points)
                     self.drawCenterBox(joints, joint_points)
-                   
                     if body.hand_right_state == 4: #lasso
                         print("LASSO")
                         self.lassoDectection(joints, joint_points) #make blue circ
-                        self.aangBulletList.append(Bullet(self.player.posX, self.player.posY, 8, (0,0,0), self.player.dir))
-                        print("aang shot")
-                    elif self.centerCollision(joint_points) == True: 
-                        # print("bend THAT SHIT!")
-                        self.timerStart += 1
+                    elif self.state == "startMode" and self.centerCollision(joint_points) == True: 
+                        self.state = "selectAang"
+                    elif self.state == "selectAang" and self.clapRight(joints, joint_points):
+                        self.state = "selectZuko"
+                    elif self.state == "selectAaang" and self.clapLeft(joints, joint_points):
+                        self.state = "selectMomo"
+                    elif self.state == "selectZuko" and self.clapRight(joints, joint_points):
+                            self.state = "selectCabbage"
+                    elif self.state == "selectZuko" and self.clapLeft(joints, joint_points):
+                        self.state = "selectAang"
+                    elif self.state == "selectCabbage" and self.clapRight(joints, joint_points):
+                        self.state = "selectTyLee"
+                    elif self.state == "selectCabbage" and self.clapLeft(joints, joint_points):
+                        self.state = "selectZuko"
+                    elif self.state == "selectTyLee" and self.clapRight(joints, joint_points):
+                        self.state = "selectToph"
+                    elif self.state == "selectTyLee" and self.clapLeft(joints, joint_points):
+                        self.state = "selectCabbage"
+                    elif self.state == "selectToph" and self.clapRight(joints, joint_points):     
+                        self.state = "selectCombustion"
+                    elif self.state == "selectToph" and self.clapLeft(joints, joint_points):  
+                        self.state = "selectTyLee"
+                    elif self.state == "selectCombustion" and self.clapRight(joints, joint_points):
+                        self.state = "selectKatara"
+                    elif self.state == "selectCombustion" and self.clapLeft(joints, joint_points):      
+                        self.state = "selectToph"
+                    elif self.state == "selectKatara" and self.clapRight(joints, joint_points):
+                        self.state = "selectMomo"
+                    elif self.state == "selectKatara" and self.clapLeft(joints, joint_points):
+                        self.state = "selectCombustion"
+                    elif self.state == "selectMomo" and self.clapRight(joints, joint_points):
+                        self.state = "selectAang"
+                    elif self.state == "selectMomo" and self.clapLeft(joints, joint_points):
+                            self.state = "selectKatara"
+                    elif self.clapUp(joints, joint_points) or self.startRealScreen == 3:
+                        print('C UP')
                         self.state = "gameMode"
-                        self.fireBend(joints, joint_points,self.rad) #collide
-                    elif self.clapLeft(joints, joint_points):
-                        self.player.posX -= 5
-                    elif self.clapRight(joints, joint_points):
-                        self.player.posX += 5 
-                    elif self.clapUp(joints, joint_points):
-                        self.player.isJump = True
-                        print("isjump", self.player.isJump)
-                    
+                    elif self.state == "gameMode":
+                        if self.playerChoosing == True:
+                            if body.hand_right_state == 4:
+                                self.playerMove = "shoot"
+                            
+                            if self.centerCollision(joint_points): #player mirrors w/ space
+                                self.playerMove = "mirror"
+            
+                            if self.playerCharge >= 5:
+                                self.playerMove = "bigBomb"
+            
+                            if self.clapLeft(joints, joint_points) and  self.player.posX > 0:
+                                self.player.posX -= self.player.vel
+                                self.player.leftPlayerWalk = True
+                                self.player.rightPlayerWalk = False
+                                self.player.standing = False
+                                
+                            if self.clapRight(joints, joint_points) and self.player.posX < self.width - self.player.spriteSize:
+                                self.player.posX += self.player.vel   
+                                self.player.leftPlayerWalk = False
+                                self.player.rightPlayerWalk = True
+                                self.player.standing = False
+                           
+                            #doesn't allow you to move up/down if jumping or jump again if jumping
+                            if not(self.player.isJump): #player pressed up
+                                if self.clapUp(joints, joint_points):
+                                    self.playerMove = "jump"
+                            else:
+                                self.drawCircPalms(joints, joint_points) #orange
+                                self.player.standing = True
+                                self.playerMove = "charge"
+
+                                
+            self.timeBar.tBTime += 55 #timer bar moves
+            self.time += 0.5
+            if self.timeBar.width + self.timeBar.tBTime > self.width: #at the end
+                self.startRealScreen += 1
+                self.timeBar.tBTime = 0
+                self.move = True
+                self.playerChoosing = False
+                self.plzSHOOT = True
+            else:
+                self.move = False
+                self.plzSHOOT = False
+            if self.timeBar.width + self.timeBar.tBTime < self.width:
+                self.playerChoosing = True
+            else:
+                self.playerChoosing = False
+
+            ##Bullet Tracker
+            for bulA in self.playerBulList: #detects if player is shot at
+                bulA.x += bulA.vel
+                print(self.playerBulPosX)
+                self.playerBulPosX = bulA.x
+                self.playerBulPosY = bulA.y
+                self.bulletSpeed = bulA.vel
+                if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y) and self.opponentMirrored == False: #normally hit
+                    print('hit')
+                    self.oppHealthBar.bulCount += 1
+                    self.playerBulList.remove(bulA)
+                    self.playerShot = False
+                    if bulA.rad > 50:
+                        self.oppHealthBar.score += 40
+                        self.oppCharge = 0
                     else:
-                        self.drawCircPalms(joints, joint_points) #orange
-            ### isJump
-            if self.player.isJump: #when jumping
-                if self.player.jumpCount >= -10: 
-                    neg = 1 #start moving up 
+                        self.oppHealthBar.score += 20
+                        self.oppCharge -= 1
+                if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y) and self.opponentMirrored == True: #mirrored
+                    bulA.vel *= -1
+                if bulA.x > self.width or bulA.x < 0:
+                    self.playerBulList.remove(bulA)
+                    self.playerShot = False
+                    
+            for bulZ in self.oppBulList: #opponent's bullets that are shooting
+                self.oppBulPosX = bulZ.x
+                self.oppBulPosY = bulZ.y
+                bulZ.x += bulZ.vel
+                if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False: #normal hit
+                    print('aang hit')
+                    self.mainHealthBar.bulCount += 1 #detects gameOver
+                    self.oppBulList.remove(bulZ)
+                    if bulZ.rad > 50:
+                        self.mainHealthBar.score += 40
+                        self.playerCharge = 0
+                    else:
+                        self.mainHealthBar.score += 20
+                        self.playerCharge -= 1
+                if bulZ.x < 0 or bulZ.x > self.width:
+                    self.oppBulList.remove(bulZ)
+                if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == True: #deflected off aang
+                    print('deflected')
+                    bulZ.vel *= -1.5
+                elif (self.opponent.hitbox[0]< bulZ.x): #deflected and opponent
+                    print('alskdfj')
+                    self.oppBulList.remove(bulZ)
+                    if bulZ.rad > 50:
+                        self.oppHealthBar.score += 40
+                        self.oppCharge = 0
+                    else:
+                        self.oppHealthBar.score += 20   
+                        self.oppCharge -= 1
+                    self.oppHealthBar.bulCount += 1 #detects gameOver
+                    self.oppShot = False
+            
+            if self.player.isJump:
+                if self.player.jumpCount >= -10:
+                    neg = 1.5 #start moving up 
                     if self.player.jumpCount < 0:
-                        neg = -1 # moving down in the parabola
+                        neg = -1.5 # moving down in the parabola
                     #makes a quadratic parabola to illustrate diff speeds
                     #0.5 scales the jump smaller 
-                    self.player.posY -= 0.75*(0.5 * (self.player.jumpCount ** 2) * neg)
+                    self.player.posY -= (0.5 * (self.player.jumpCount ** 2) * neg)
                     self.player.jumpCount -= 1 #change heights
                 else:
                     self.player.isJump = False
                     self.player.jumpCount = 10
                     
-            
             if self.opponent.isJump: #when jumping
                 if self.opponent.jumpCount >= -10: 
                     neg = 1 #start moving up 
@@ -518,50 +1054,169 @@ class BodyGameRuntime(object):
                         neg = -1 # moving down in the parabola
                     #makes a quadratic parabola to illustrate diff speeds
                     #0.5 scales the jump smaller 
-                    self.opponent.posY -= 0.75*(0.5 * (self.opponent.jumpCount ** 2) * neg)
+                    self.opponent.posY -= (0.5 * (self.opponent.jumpCount ** 2) * neg)
                     self.opponent.jumpCount -= 1 #change heights
                 else:
                     self.opponent.isJump = False
                     self.opponent.jumpCount = 10
-            if self.aangHealthBar.bulCount == 30 or self.zukoHealthBar.bulCount == 30:
+                
+                        
+            if self.mainHealthBar.bulCount == 10 or self.oppHealthBar.bulCount == 10:
                 self.state = "endMode"
-            ### Bullets
-            for bulA in self.aangBulletList: 
-                bulA.x += bulA.vel
-                self.bulletPosX = bulA.x
-                self.bulletPosY = bulA.y
-                self.bulletSpeed = bulA.vel
-                if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y):
-                    print('hit')
-                    self.zukoHealthBar.bulCount += 1
-                    self.aangBulletList.remove(bulA)
-                    self.aangShot = False
-                    self.zukoHealthBar.score += 10
-                if bulA.x > self.width:
-                    self.aangBulletList.remove(bulA)
-                    self.aangShot = False
+
+            ## Execute Player Moves
+        
+                        
+                #opponent moves
+                # if self.opponent.rightPlayerWalk == True: 
+                #     self.opponent.dir = 1
+                # else:
+                if self.oppShot == True:
+                    self.opponent.rightPlayerWalk = True
+                   
+                # 
+                if event.key == pygame.K_s:
+                    self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
                     
-            for bulZ in self.zukoBulletList: #removes bullets if it in vicinity of the enemy
-                bulZ.x += bulZ.vel
-                if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y):
-                    print('hit')
-                    self.aangHealthBar.bulCount += 1
-                    self.zukoBulletList.remove(bulZ)
-                    self.aangHealthBar.score += 10
-                if bulZ.x < 0:
-                    self.zukoBulletList.remove(bulZ)
-                ### AI CPU
-            if self.player.isJump == True and self.aangShot == False:
-                self.opponent.isJump = True
-            if math.fabs(self.player.posX + 100) >= self.opponent.posX:
-                self.opponent.isJump = True
-            if self.aangShot == True:
-                if self.bulletSpeed > 5:
-                    if (self.bulletPosX + 50 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX and self.bulletPosY >= self.opponent.posY:
-                        self.opponent.isJump = True
+                if event.key == pygame.K_a and  self.opponent.posX > 0:
+                    self.opponent.posX -= self.opponent.vel
+                    self.opponent.leftPlayerWalk = True
+                    self.opponent.rightPlayerWalk = False
+                    self.opponent.standing = False
+                    
+                if event.key == pygame.K_d and self.opponent.posX < self.width - self.opponent.spriteSize:
+                    self.opponent.posX += self.opponent.vel   
+                    self.opponent.leftPlayerWalk = False
+                    self.opponent.rightPlayerWalk = True
+                    self.opponent.standing = False
                 else:
-                    if (self.bulletPosX + 20 >= self.opponent.posX) and self.bulletPosX < self.opponent.posX:
+                    self.opponent.standing = True
+            
+                if not(self.opponent.isJump): #doesn't allow you to move up/down if jumping or jump again if jumping
+                    if event.key == pygame.K_w and self.opponent.posX > 0 and self.opponent.posX <= self.width - self.opponent.spriteSize:
                         self.opponent.isJump = True
+                        self.opponent.standing = True
+                if event.key == pygame.K_r:
+                    self.state = "startMode"
+                    
+                    
+                    
+                    
+            if self.plzSHOOT == True:
+                if self.playerMove == "shoot" and self.playerCharge >= 1:
+                    self.playerCharge -= 1
+                    self.player.bulletCount += 1
+                    self.playerShot = True
+                    self.player.bulletCount = 1
+                    self.playerBulList.append(Bullet(self.player.posX, self.player.posY, 8, (0,0,0), self.player.dir))
+    
+                if self.playerMove == "mirror" and self.playerCharge >= 1:
+                    self.playerMirrored = True
+                    self.player.color = (255,255,255)
+                    self.playerCharge -= 1
+                    
+                if self.playerCharge < 1 and (self.playerMove == "mirror" or self.playerMove == "shoot"):
+                    self.playerMove = "charge"
+                    self.playerNotEnough = True
+                
+                if self.playerMove == "bigBomb":
+                    self.playerBulList.append(Bullet(self.player.posX, self.player.posY, 60, (0,0,0), self.player.dir))
+                
+                if self.playerMove == "jump":
+                    self.player.isJump = True
+                    self.player.standing = True
+                
+                if self.playerMove == "charge":
+                    self.playerCharge += 1
+                if self.playerCharge >= 1: #resets "notEnough"
+                    self.playerNotEnough = False
+                if self.playerMove != "mirror": #resets color
+                    self.player.color = (255,165,0)
+                    self.playerMirrored = False
+                ## Tracking AI
+                if self.plzSHOOT == True:
+                    self.playerMoveTracker.append(self.playerMove)
+            dictComboCount = {}
+            for curMove in self.playerMoveTracker:
+                dictComboCount[curMove] = dictComboCount.get(curMove, 0) + 1
+            # print(dictComboCount)
+            recommendedMove = []
+            mostProbMove = []
+            best = 0
+            for move in dictComboCount:
+                count = dictComboCount[move]
+                if count > best:
+                    best = count
+                    mostProbMove.append(move)
+            # print(mostProbMove)
+            jumpAI = "jump"
+            mirrorAI  = "mirror"
+            chargeAI = "charge"
+            shootAI = "shoot"
+            bigFireAI = "bigboi"
+            for playerCurMove in self.playerMoveTracker: #optimal defense moves
+                if playerCurMove == "charge":
+                    recommendedMove.append(chargeAI)
+                elif playerCurMove == "shoot":
+                    recommendedMove.append(mirrorAI)
+                elif playerCurMove == "mirror":
+                    recommendedMove.append(shootAI)
+                elif playerCurMove == "jump":
+                    recommendedMove.append(shootAI)
+            # print(recommendedMove)
+            if len(recommendedMove) <= 5: #randomMove
+                self.oppMove = random.choice([jumpAI, mirrorAI, shootAI, chargeAI])
+            else:
+                for j in recommendedMove:
+                    self.oppMove = j
+                    recommendedMove.remove(j)
+            # print(self.oppMove)
+    
+            ## Executing opponent AI
+            if self.move == True: 
+                if self.oppMove != mirrorAI:
+                    self.opponent.color = (255,165,0)
+                    self.opponentMirrored = False
+                if self.oppCharge <= 0: #fix AI
+                    self.oppMove = chargeAI
+                    self.oppCharge += 1
+                else:
+                    if self.oppMove == jumpAI: #free
+                        self.opponent.isJump = True
+                    elif self.oppMove == mirrorAI and self.oppCharge >= 1: #mirror cost 1
+                        self.opponent.color = mirrorAI
+                        self.opponentMirrored = True
+                        self.oppCharge -= 1
+                    elif self.oppMove == chargeAI: #free
+                        self.oppCharge += 1
+                        return self.oppMove
+                    elif self.oppMove == shootAI and self.oppCharge >= 1: #shooting cost 1
+                        self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
+                        self.oppCharge -= 1
+                    elif self.oppCharge == 5: #bigFire cost 5
+                        self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 60, (0,0,0), self.opponent.dir))
+                        self.oppMove = bigFireAI
+                    #reset player moves too
+                    self.opponent.color = (255,165,0)
+                    self.opponentMirrored = False
+            
+        
+            if self.playerShot == True and self.oppMove == "shoot":
+                print('hi')
+                if self.bulletSpeed > 5:
+                    if (self.playerBulPosX + 50 >= self.opponent.posX) and self.playerBulPosX < self.opponent.posX and self.playerBulPosY >= self.opponent.posY:
+                        self.opponent.isJump = True
+                    else:
+                        if (self.playerBulPosX + 20 >= self.opponent.posX) and self.playerBulPosX < self.opponent.posX:
+                            self.opponent.isJump = True
+        
+            if self.oppShot == True and self.playerMove == "shoot": #jump dodge
+                if self.bulletSpeed > 5:
+                    if (self.playerBulPosX + 50 >= self.player.posX) and self.playerBulPosX < self.palyer.posX and self.playerBulPosY >= self.player.posY:
+                        self.player.isJump = True
+                    else:
+                        if (self.playerBulPosX + 20 >= self.player.posX) and self.playerBulPosX < self.player.posX:
+                            self.player.isJump = True
             
             
             screen_lock = thread.allocate()
@@ -576,17 +1231,7 @@ class BodyGameRuntime(object):
             self._screen.blit(surface_to_draw, (0,0))
             surface_to_draw = None
             
-            if self.draftPlayers == True:
-                self.aangHealthBar.draw(self.screen)
-                self.zukoHealthBar.draw(self.screen)
-                self.player.draw()
-                self.opponent.draw()
-            print('posX', self.player.posX)
             
-            for bulZ in self.aangBulletList:
-                bulZ.draw(self.screen)
-            for bulA in self.zukoBulletList:
-                bulA.draw(self.screen)   
             
             for event in pygame.event.get():
                 self.get_event(event)

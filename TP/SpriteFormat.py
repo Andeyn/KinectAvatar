@@ -485,10 +485,10 @@ class States(object):
 class Menu(States):
     def __init__(self):
         States.__init__(self)
-        self.themeSong = pygame.mixer.Sound("images/theme.wav")
-        self.introVid = pygame.mixer.Sound("images/introVid.wav")
         self.width = 600
         self.height = 400
+        self.themeSong = pygame.mixer.Sound("images/theme.wav")
+        self.introVid = pygame.mixer.Sound("images/introVid.wav")
         self.time = 0
         self.state = "startMode"
         self.oppCharge = 1
@@ -525,8 +525,7 @@ class Menu(States):
         self.charZukoScreen = pygame.transform.scale(self.charZukoScreen,(self.width,self.height))
         self.charMomoScreen = pygame.image.load("images/charAppaMomoSelect.jpg")
         self.charMomoScreen = pygame.transform.scale(self.charMomoScreen,(self.width,self.height))
-        self.charList = [self.charAangScreen, self.charMomoScreen, self.charKataraScreen,self.charCBManScreen, self.charTophScreen, self.charTyLeeScreen, self.charCabScreen, self.charZukoScreen]
-        
+  
         
         self.endScreen = pygame.image.load("images/gameOver.png")
         self.endScreen =pygame.transform.scale(self.endScreen,(self.width,self.height))
