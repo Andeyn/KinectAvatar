@@ -53,7 +53,7 @@ class Aang(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//20
+        self.posX = self.width//15
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -104,7 +104,7 @@ class Momo(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//20
+        self.posX = self.width//15
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -153,7 +153,7 @@ class cabbageMan(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//20
+        self.posX = self.width//15
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -202,7 +202,7 @@ class Katara(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//20
+        self.posX = self.width//15
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -249,7 +249,7 @@ class tyLee(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//20
+        self.posX = self.width//15
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -298,7 +298,7 @@ class combustionMan(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//20
+        self.posX = self.width//15
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -346,7 +346,7 @@ class Toph(Character):
         self.standing = True
         self.bullets = []
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
-        self.posX = self.width//20
+        self.posX = self.width//15
         self.posY = self.height - 100
         self.dir = 1
         self.bulletCount = 0
@@ -392,7 +392,7 @@ class Zuko(Character):
         self.standing = True
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
         self.bullets = []
-        self.posX = self.width*7//8
+        self.posX = self.width*3//4
         self.posY = self.height - 100
         self.dir = 1
         self.jumpTimes = 0
@@ -832,19 +832,34 @@ class Menu(States):
         #create a queuing system that prepares the most likely attack
         if self.plzSHOOT == True:
            self.playerMoveTracker.append(self.playerMove)
-        print(self.playerMoveTracker)
+        # print(self.playerMoveTracker)
         
-        ## React to Tracking 
+        # patternRecog = 0
+        # bestMove = "nothing"
+        # first = "nothing"
+        # second = "nothing"
+        # for i in range(len(self.playerMoveTracker)):
+        #     if self.playerMoveTracker[i] =
+        
+        ## Recommended Moves
         dictComboCount = {}
         for curMove in self.playerMoveTracker:
             dictComboCount[curMove] = dictComboCount.get(curMove, 0) + 1
         # print(dictComboCount)
+        recommendedMove = []
+        mostProbMove = []
+        best = 0
+        for move in dictComboCount:
+            count = dictComboCount[move]
+            if count > best:
+                best = count
+                mostProbMove.append(move)
+        print(mostProbMove)
         jumpAI = "jump"
         mirrorAI  = "mirror"
         chargeAI = "charge"
         shootAI = "shoot"
         bigFireAI = "bigboi"
-        recommendedMove = []
         for playerCurMove in self.playerMoveTracker: #optimal defense moves
             if playerCurMove == "charge":
                 recommendedMove.append(chargeAI)
@@ -855,7 +870,8 @@ class Menu(States):
             elif playerCurMove == "jump":
                 recommendedMove.append(shootAI)
         # print(recommendedMove)
-        if len(recommendedMove) <= 1: #randomMove
+        if len(recommendedMove) <= 5: #randomMove
+            print('rando')
             self.oppMove = random.choice([jumpAI, mirrorAI, shootAI, chargeAI])
         else:
             for j in recommendedMove:
@@ -863,7 +879,7 @@ class Menu(States):
                 recommendedMove.remove(j)
         # print(self.oppMove)
 
-        ## Executing opponent move
+        ## Executing opponent AI
         if self.move == True: 
             if self.oppMove != mirrorAI:
                 self.opponent.color = (255,165,0)
@@ -916,7 +932,7 @@ class Menu(States):
         if self.state == "startMode":
             self.screen.blit(self.startScreen,(0,0))
         if self.state == "selectAang":
-            pygame.mixer.Sound.play(self.introVid)
+            # pygame.mixer.Sound.play(self.introVid)
             self.screen.blit(self.charAangScreen,(0,0))
         if self.state == "selectZuko":
             self.screen.blit(self.charZukoScreen,(0,0))            
@@ -936,7 +952,7 @@ class Menu(States):
             self.screen.blit(self.endScreen, (0,0))
         if self.state == "gameMode":
             self.screen.blit(self.playScreen,(0,0))
-            pygame.mixer.Sound.play(self.themeSong)
+            # pygame.mixer.Sound.play(self.themeSong)
 
             basicfont = pygame.font.SysFont(None, 30) #print chosen Move
             textMove = basicfont.render('Your Move:' + " " + str(self.playerMove),True, self.black)
