@@ -45,6 +45,8 @@ class Aang(Character):
         self.aangFly = pygame.transform.scale(self.aangFly, (spriteSizeX, spriteSizeX))
         self.airball = pygame.image.load('images/airballs.png')
         self.airball = pygame.transform.scale(self.airball, (75, 75))
+        self.airShield = pygame.image.load('images/AirShield.png')
+        self.airShield = pygame.transform.scale(self.airShield, (200, 200))
         self.isJump = False
         self.leftPlayerWalk = False
         self.rightPlayerWalk = True
@@ -384,6 +386,8 @@ class Zuko(Character):
         self.zukoLeft = pygame.transform.scale(self.zukoLeft, (spriteSizeX, spriteSizeY))
         self.fireball = pygame.image.load('images/fireNationSymbol.png')
         self.fireball = pygame.transform.scale(self.fireball, (50, 50))
+        self.fireShield = pygame.image.load('images/FireShield.png')
+        self.fireShield = pygame.transform.scale(self.fireShield, (200, 200))
         self.isJump = False
         self.leftPlayerWalk = True
         self.rightPlayerWalk = False
@@ -993,10 +997,10 @@ class Menu(States):
                 screen.blit(textChooseCharge, textrectCC)
             
             if self.oppShot:
-                self.screen.blit(self.opponent.fireball, (self.width*3//4, self.height//2))
+                self.screen.blit(self.opponent.fireShield, (self.width*3//4, self.height//2))
                 print('FIRE')
             if self.playerShot:
-                self.screen.blit(self.player.airball, (self.width//4, self.height//2))
+                self.screen.blit(self.player.airShield, (self.width//6, self.height//4))
                 print('AIR')
             
             for bulZ in self.playerBulList:
