@@ -486,18 +486,20 @@ class chargeBar(object):
         pygame.draw.rect(win, self.color, (self.x , self.y, self.width + self.tBTime, self.height))
         
 class Bullet(object):
-    def __init__(self, x, y, radius, color, direction):
+    def __init__(self, win, x, y, image, direction, rad):
         self.x = x
         self.y = y
-        self.rad = radius
-        self.color = color
         self.dir = direction #which way the bullet shoots
         speed = 19
         self.vel = speed * self.dir #speed of bullet
         self.bulletList = []
-        
+        self.image = image
+        self.rad = rad
+        self.image = pygame.transform.scale(self.image, (self.rad, self.rad))
+
     def draw(self, win):
-        pygame.draw.circle(win, self.color, (int(self.x), int(self.y)), self.rad)
+        # pygame.draw.circle(win, self.color, (int(self.x), int(self.y)), self.rad)
+        win.blit(self.image, (self.x,self.y))
 
 class States(object):
    def __init__(self):
@@ -1270,35 +1272,36 @@ class BodyGameRuntime(object):
                 if self.oppMove != deflectAI:
                     self.opponent.color = (255,165,0)
                     self.opponentdeflected = False
-                if self.oppCharge <= 0: #fix AI
+                if self.oppCharge <= 0: #recharges so doesn't enter very negative
                     self.oppMove = chargeAI
                     self.oppCharge += 1
+                # if self.oppMove != shootAI or self.oppMove != bigFireAI:
+                #     self.oppShot = False
                 else:
                     if self.oppMove == jumpAI: #free
                         self.opponent.isJump = True
                     elif self.oppMove == deflectAI and self.oppCharge >= 1: #deflect cost 1
-                        self.opponent.color = deflectAI
+                        self.opponent.color = (255,255,255)
                         self.opponentdeflected = True
                         self.oppCharge -= 1
                     elif self.oppMove == chargeAI: #free
                         self.oppCharge += 1
                         return self.oppMove
                     elif self.oppMove == shootAI and self.oppCharge >= 1: #shooting cost 1
-                        self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
+                        self.oppBulList.append(Bullet(self.screen, self.opponent.posX, self.opponent.posY, self.opponent.fireball, self.opponent.dir, 50))
+                        self.oppShot = True
                         self.oppCharge -= 1
+                        
                     elif self.oppCharge == 5: #bigFire cost 5
-                        self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 60, (0,0,0), self.opponent.dir))
+                        self.oppBulList.append(Bullet(self.screen, self.opponent.posX, self.opponent.posY, self.opponent.fireball, self.opponent.dir, 100))
                         self.oppMove = bigFireAI
+                        self.oppShot = True
+                    else:
                     #reset player moves too
-                    self.opponent.color = (255,165,0)
-                    self.opponentdeflected = False
-            
-            
-            if self.oppShot == True and self.playerMove != "deflect" and self.playerMove != "jump":
-                self.playerHit = True
-            
+                        self.opponent.color = (255,165,0)
+                        self.opponentdeflected = False
+                        self.oppShot = False
             if self.playerShot == True and self.oppMove == "shoot":
-                print('hi')
                 if self.bulletSpeed > 5:
                     if (self.playerBulPosX + 50 >= self.opponent.posX) and self.playerBulPosX < self.opponent.posX and self.playerBulPosY >= self.opponent.posY:
                         self.opponent.isJump = True
@@ -1308,12 +1311,14 @@ class BodyGameRuntime(object):
         
             if self.oppShot == True and self.playerMove == "shoot": #jump dodge
                 if self.bulletSpeed > 5:
-                    if (self.playerBulPosX + 50 >= self.player.posX) and self.playerBulPosX < self.palyer.posX and self.playerBulPosY >= self.player.posY:
+                    if (self.playerBulPosX + 50 >= self.player.posX) and self.playerBulPosX < self.player.posX and self.playerBulPosY >= self.player.posY:
                         self.player.isJump = True
                     else:
                         if (self.playerBulPosX + 20 >= self.player.posX) and self.playerBulPosX < self.player.posX:
                             self.player.isJump = True
             
+            if self.oppShot == True and self.playerMove != "deflect" and self.playerMove != "jump":
+                self.playerHit = True
             
             screen_lock = thread.allocate()
 
