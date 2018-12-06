@@ -1096,10 +1096,10 @@ class BodyGameRuntime(object):
                         self.state = "gameMode"
                         print("LASSO")
                         self.lassoDectection(joints, joint_points) #make blue circ
-                    elif self.state == "learnMode" and self.clapUp(joints, joint_points):
+                    elif self.state == "startMode" and self.clapUp(joints, joint_points):
                         print('C UP')
                         self.startIntroVid()
-                        self.state = "gameMode"
+                        self.state = "learnMode"
                     
                     ## Splash screen
                     elif self.state == "learnMode" and self.centerCollision(joint_points) == True: 
