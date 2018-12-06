@@ -415,7 +415,7 @@ class Zuko(Character):
             elif self.rightPlayerWalk == True:
                 self.screen.blit(self.zukoRight, (self.posX,self.posY))
     
-        self.hitbox = (self.posX - 10, self.posY - 10, 80, 80) #udpates new (x,y) before redrawing new square
+        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
         pygame.draw.rect(self.screen, self.color, self.hitbox, 5)
         
         for bullet in self.bullets:
