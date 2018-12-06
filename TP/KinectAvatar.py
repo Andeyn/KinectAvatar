@@ -1319,6 +1319,8 @@ class BodyGameRuntime(object):
             
             if self.oppShot == True and self.playerMove != "deflect" and self.playerMove != "jump":
                 self.playerHit = True
+            else:
+                self.playerHit = False
             
             screen_lock = thread.allocate()
 
