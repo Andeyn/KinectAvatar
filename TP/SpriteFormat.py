@@ -841,7 +841,7 @@ class Menu(States):
                 if self.oppMove == jumpAI: #free
                     self.opponent.isJump = True
                 elif self.oppMove == mirrorAI and self.oppCharge >= 1: #mirror cost 1
-                    self.opponent.color = mirrorAI
+                    self.opponent.color = (255,255,255)
                     self.opponentMirrored = True
                     self.oppCharge -= 1
                 elif self.oppMove == chargeAI: #free
