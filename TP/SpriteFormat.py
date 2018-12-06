@@ -77,7 +77,7 @@ class Aang(Character):
         if self.isJump:
             self.screen.blit(self.aangFly, (self.posX, self.posY))
             
-        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.hitbox = (self.posX - 10, self.posY - 10, 80, 80) #udpates new (x,y) before redrawing new square
         pygame.draw.rect(self.screen, self.color, self.hitbox, 5)
         
         for bullet in self.bullets:
@@ -415,7 +415,7 @@ class Zuko(Character):
             elif self.rightPlayerWalk == True:
                 self.screen.blit(self.zukoRight, (self.posX,self.posY))
     
-        self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
+        self.hitbox = (self.posX - 10, self.posY - 10, 80, 80) #udpates new (x,y) before redrawing new square
         pygame.draw.rect(self.screen, self.color, self.hitbox, 5)
         
         for bullet in self.bullets:
@@ -802,31 +802,31 @@ class Menu(States):
         if self.playerCharge < 2: #if player is low on charge, they'll prob recharge
             self.oppMove = shootAI #you should shoot, cuz they'll prob recharge
         
-        # print(recommendedMove)
-        # if len(recommendedMove) <= 5: #randomMove
-        #     print('rando')
-        #     self.oppMove = random.choice([jumpAI, mirrorAI, shootAI, chargeAI])
-        # else:
-        #     for j in recommendedMove:
-        #         self.oppMove = j
-        #         recommendedMove.remove(j)
+        print(recommendedMove)
+        if len(recommendedMove) <= 5: #randomMove
+            print('rando')
+            self.oppMove = random.choice([jumpAI, mirrorAI, shootAI, chargeAI])
+        else:
+            for j in recommendedMove:
+                self.oppMove = j
+                recommendedMove.remove(j)
        
-            
-        for self.i in range(len(self.playerMoveTracker)):
-            if self.timer % 1 == 0:
-                playerMove = self.playerMoveTracker[self.i]
-                tupMove = (self.oppMove, playerMove)
-                if self.playerScoreIncr + 10 == self.mainHealthBar.score: #tells AI that the move worked, so do it again
-                    self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) + 1
-                elif self.oppScoreIncr + 10 == self.oppHealthBar.score: #FIX: change the situation 
-                    self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) - 1
+#       #       
+        # for self.i in range(len(self.playerMoveTracker)):
+        #     if self.timer % 1 == 0:
+        #         playerMove = self.playerMoveTracker[self.i]
+        #         tupMove = (self.oppMove, playerMove)
+        #         if self.playerScoreIncr + 10 == self.mainHealthBar.score: #tells AI that the move worked, so do it again
+        #             self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) + 1
+        #         elif self.oppScoreIncr + 10 == self.oppHealthBar.score: #FIX: change the situation 
+        #             self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) - 1
         
         # self.oppMove = self.bestMoveAI(self.rewardDict)
         # if self.oppMove ==  and self.isLegalMoveAI:
         #     self.oppMove  = bestTup
         # for tups in self.rewardDict:
         #     print(self.rewardDict[tups])
-        print(self.rewardDict)
+        # print(self.rewardDict)
         ## Executing opponent AI
         if self.move == True: 
             if self.oppMove != mirrorAI:
@@ -891,7 +891,6 @@ class Menu(States):
         elif self.state == "learnMode":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.state = "selectAang"      
-                
         if event.type == pygame.KEYDOWN:
             if self.state == "selectAang":
                 if event.key == pygame.K_RIGHT:
