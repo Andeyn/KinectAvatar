@@ -496,6 +496,7 @@ class Menu(States):
         self.themeSong = pygame.mixer.Sound("images/theme.wav")
         self.introVid = pygame.mixer.Sound("images/introVid.wav")
         self.time = 0
+        self.timer = 0
         self.state = "startMode"
         self.oppCharge = 1
         self.playerCharge = 1
@@ -512,7 +513,7 @@ class Menu(States):
         self.playerScoreIncr = 0
         self.oppScoreIncr = 0
         self.black = (0,0,0)
-        self.startScreen = pygame.image.load("images/start.png")
+        self.startScreen = pygame.image.load("images/startImage.jpg")
         self.startScreen =pygame.transform.scale(self.startScreen,(self.width,self.height))
         self.screen = pygame.display.set_mode((self.width, self.height))
         ### Character Selection
@@ -538,7 +539,8 @@ class Menu(States):
         self.endScreen =pygame.transform.scale(self.endScreen,(self.width,self.height))
         self.playScreen = pygame.image.load("images/waternation.jpg")
         self.playScreen = pygame.transform.scale(self.playScreen,(self.width,self.height))
-    
+        self.learnScreen = pygame.image.load("images/aangIntro.jpg")
+        self.learnScreen = pygame.transform.scale(self.learnScreen,(self.width,self.height))        
         self.player = Aang(self.screen)
         self.opponent = Zuko(self.screen)
         if self.state == "selectAang":
@@ -582,6 +584,8 @@ class Menu(States):
         self.opponent.dir = -1
         self.player.dir = 1
         self.rewardDict = {}
+        self.playerMoveCount = {}
+
     def isLegalMoveAI(self):
         if self.oppMove == "shoot" and self.oppCharge < 1:
             return False
@@ -600,6 +604,15 @@ class Menu(States):
                 bestTup = tups
         return bestTup
     
+    def playerMostFreqMove(self, comboCountDict):
+        bestCount = 0
+        mostCommonMove = "nothing"
+        for move in comboCountDict:
+            if comboCountDict[move] > bestCount:
+                bestCount = comboCountDict[tups]
+                mostCommonMove = move
+        return mostCommonMove
+
     def playerBulletTracker(self):
         for bulA in self.playerBulList: #detects if player is shot at
             bulA.x += bulA.vel
@@ -692,6 +705,7 @@ class Menu(States):
     def timerFired(self):        
         self.timeBar.tBTime += 8 #timer bar moves
         self.time += 0.5
+        self.timer += 0.01
         if self.timeBar.width + self.timeBar.tBTime == self.width: #at the end
             self.timeBar.tBTime = 0
             self.move = True
@@ -760,18 +774,9 @@ class Menu(States):
         #     if self.playerMoveTracker[i] =
         
         ## Recommended Moves
-        # dictComboCount = {}
-        # for curMove in self.playerMoveTracker:
-        #     dictComboCount[curMove] = dictComboCount.get(curMove, 0) + 1
-        # # print(dictComboCount)
-        # mostProbMove = []
-        # best = 0
-        # for move in dictComboCount:
-        #     count = dictComboCount[move]
-        #     if count > best:
-        #         best = count
-        #         mostProbMove.append(move)
-        # print(mostProbMove)
+        for curMove in self.playerMoveTracker:
+            self.playerMoveCount[curMove] = self.playerMoveCount.get(curMove, 0) + 1
+
         jumpAI = "jump"
         mirrorAI  = "mirror"
         chargeAI = "charge"
@@ -805,20 +810,16 @@ class Menu(States):
         #     for j in recommendedMove:
         #         self.oppMove = j
         #         recommendedMove.remove(j)
-        # 
-        
-        if self.plzSHOOT == True:
-            self.i += 1
+       
             
         for self.i in range(len(self.playerMoveTracker)):
-            playerMove = self.playerMoveTracker[self.i]
-            tupMove = (self.oppMove, playerMove)
-            # if tupMove not in self.rewardDict:
-            #     self.rewardDict[tupMove] = 0
-            if self.playerScoreIncr + 10 == self.mainHealthBar.score: #tells AI that the move worked, so do it again
-                self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) + 1
-            elif self.oppScoreIncr + 10 == self.oppHealthBar.score: #FIX: change the situation 
-                self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) - 1
+            if self.timer % 1 == 0:
+                playerMove = self.playerMoveTracker[self.i]
+                tupMove = (self.oppMove, playerMove)
+                if self.playerScoreIncr + 10 == self.mainHealthBar.score: #tells AI that the move worked, so do it again
+                    self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) + 1
+                elif self.oppScoreIncr + 10 == self.oppHealthBar.score: #FIX: change the situation 
+                    self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) - 1
         
         # self.oppMove = self.bestMoveAI(self.rewardDict)
         # if self.oppMove ==  and self.isLegalMoveAI:
@@ -875,14 +876,21 @@ class Menu(States):
                 else:
                     if (self.playerBulPosX + 20 >= self.player.posX) and self.playerBulPosX < self.player.posX:
                         self.player.isJump = True
+                        
+            
     def cleanup(self):
        print('cleaning up Menu state stuff')
     def startup(self):
        print('starting Menu state stuff')
     def get_event(self, event):
+        print(self.state)
         if self.state == "startMode":
             if event.type == pygame.MOUSEBUTTONDOWN:
-                self.state = "selectAang"
+                self.state = "learnMode"
+                
+        elif self.state == "learnMode":
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.state = "selectAang"      
                 
         if event.type == pygame.KEYDOWN:
             if self.state == "selectAang":
@@ -1002,6 +1010,8 @@ class Menu(States):
         # print(self.state)
         if self.state == "startMode":
             self.screen.blit(self.startScreen,(0,0))
+        if self.state == "learnMode":
+            self.screen.blit(self.learnScreen, (0,0))
         if self.state == "selectAang":
             pygame.mixer.Sound.play(self.introVid)
             self.screen.blit(self.charAangScreen,(0,0))
