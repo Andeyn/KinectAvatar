@@ -855,11 +855,11 @@ class Menu(States):
                     self.oppBulList.append(Bullet(self.screen, self.opponent.posX, self.opponent.posY, self.opponent.fireball, self.opponent.dir, 100))
                     self.oppMove = bigFireAI
                     self.oppShot = True
-
+                else:
                 #reset player moves too
-                self.opponent.color = (255,165,0)
-                self.opponentMirrored = False
-                self.oppShot = False
+                    self.opponent.color = (255,165,0)
+                    self.opponentMirrored = False
+                    self.oppShot = False
         if self.playerShot == True and self.oppMove == "shoot":
             if self.bulletSpeed > 5:
                 if (self.playerBulPosX + 50 >= self.opponent.posX) and self.playerBulPosX < self.opponent.posX and self.playerBulPosY >= self.opponent.posY:
@@ -1056,7 +1056,7 @@ class Menu(States):
                 screen.blit(textChooseCharge, textrectCC)
             
             if self.oppShot:
-                self.screen.blit(self.opponent.fireShield, (self.width*3//4, self.height//2))
+                self.screen.blit(self.opponent.fireShield, (self.width//2, self.height//4))
                 print('FIRE')
                 
             if self.playerShot:
