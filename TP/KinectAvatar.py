@@ -752,6 +752,28 @@ class BodyGameRuntime(object):
         self.airball = pygame.transform.scale(self.airball, (500, 500))
         
         self._frame_surface.blit(self.airball,(self.LHX, self.LHY))   
+    
+    def drawShoot(self, joints, jointPoints):
+        print("charge!")
+        self.LHX = jointPoints[PyKinectV2.JointType_HandLeft].x
+        self.RHX = jointPoints[PyKinectV2.JointType_HandRight].x
+        self.LHY = jointPoints[PyKinectV2.JointType_HandLeft].y
+        self.RHY = jointPoints[PyKinectV2.JointType_HandRight].y
+        self.airball = pygame.image.load('images/aangFly.png')
+        self.airball = pygame.transform.scale(self.airball, (500, 500))
+        
+        self._frame_surface.blit(self.airball,(self.LHX, self.LHY)) 
+
+    def drawCostume(self, joints, jointPoints):
+        print("costume!")
+        self.shoulderLX = jointPoints[PyKinectV2.JointType_ShoulderLeft].x
+        self.shoulderRY = jointPoints[PyKinectV2.JointType_ShoulderLeft].y
+        self.shoulderRX = jointPoints[PyKinectV2.JointType_ShoulderRight].x
+        self.costume = pygame.image.load('images/costume.png')
+        self.costume = pygame.transform.scale(self.costume, (600, 700))
+        
+        self._frame_surface.blit(self.costume,(self.shoulderLX- 200, self.shoulderLY- 100))   
+
 
     def drawFireHit(self, joints, jointPoints):
         print("burnt!")
@@ -1053,18 +1075,19 @@ class BodyGameRuntime(object):
                     self.drawSpine(joints, joint_points)
                     self.drawCenterBox(joints, joint_points)
                     self.drawCircPalms(joints, joint_points) #resting hand Position
-                    if body.hand_right_state == 4: #lasso
+                    if self.state == "startMode" and body.hand_right_state == 4 \
+                        or self.state == "learnMode" and body.hand_right_state == 4: #lasso
                         self.state = "gameMode"
                         print("LASSO")
                         self.lassoDectection(joints, joint_points) #make blue circ
-                    elif self.state == "startMode" and self.clapUp(joints, joint_points):
+                    elif self.state == "learnMode" and self.clapUp(joints, joint_points):
                         print('C UP')
                         self.startIntroVid()
-                        self.state = "learnMode"
+                        self.state = "gameMode"
                     
                     ## Splash screen
                     elif self.state == "learnMode" and self.centerCollision(joint_points) == True: 
-                        self.state = "selectAang"
+                        self.state = "gameMode"
                     elif self.state == "selectAang" and self.clapRight(joints, joint_points):
                         self.state = "selectZuko"
                     elif self.state == "selectAaang" and self.clapLeft(joints, joint_points):
@@ -1099,10 +1122,11 @@ class BodyGameRuntime(object):
                             self.state = "selectKatara"
 
                     elif self.state == "gameMode":
+                        self.drawCostume(joints, joint_points)
                         if self.playerChoosing == True:
                             if body.hand_right_state == 4:
                                 self.playerMove = "shoot"
-                            
+                                self.drawShoot(joints, joint_points)
                             if self.blockDectection(joint_points): #player deflects w/ space
                                 self.drawShield(joints, joint_points)
                                 self.playerMove = "deflect"
