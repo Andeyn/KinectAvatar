@@ -396,7 +396,7 @@ class Zuko(Character):
         self.standing = True
         self.hitbox = (self.posX - 10, self.posY - 10, 70, 70) #udpates new (x,y) before redrawing new square
         self.bullets = []
-        self.posX = self.width*3//4
+        self.posX = self.width*3.5//5
         self.posY = self.height - 100
         self.dir = 1
         self.jumpTimes = 0
@@ -506,6 +506,7 @@ class Menu(States):
         self.plzSHOOT = False
         self.oppMove = "nothing"
         self.playerMove = "nothing"
+        self.i = 0
         self.playerMirrored = False
         self.opponentMirrored = False
         self.playerScoreIncr = 0
@@ -580,7 +581,300 @@ class Menu(States):
         self.oppBulPosY = 0
         self.opponent.dir = -1
         self.player.dir = 1
+        self.rewardDict = {}
+    def isLegalMoveAI(self):
+        if self.oppMove == "shoot" and self.oppCharge < 1:
+            return False
+        elif self.oppMove == "mirror" and self.oppCharge < 1:
+            return False
+        else:
+            return True
+    
+    def bestMoveAI(self, rewardDict):
+        bestCount = 0
+        bestTup = ("charge", "charge")
+        for tups in rewardDict:
+            if rewardDict[tups] > bestCount:
+                print('can i be doneee')
+                bestCount = rewardDict[tups]
+                bestTup = tups
+        return bestTup
+    
+    def playerBulletTracker(self):
+        for bulA in self.playerBulList: #detects if player is shot at
+            bulA.x += bulA.vel
+            print(self.playerBulPosX)
+            self.playerBulPosX = bulA.x
+            self.playerBulPosY = bulA.y
+            self.bulletSpeed = bulA.vel
+            if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y) and self.opponentMirrored == False: #normally hit
+                print('hit')
+                self.oppHealthBar.bulCount += 1
+                self.playerBulList.remove(bulA)
+                self.playerShot = False
+                if bulA.rad > 50:
+                    self.oppHealthBar.score += 40
+                    self.oppCharge = 0
+                else:
+                    self.oppHealthBar.score += 10
+                    self.oppCharge -= 1
+            if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y) and self.opponentMirrored == True: #mirrored
+                bulA.vel *= -1
+            if bulA.x > self.width or bulA.x < 0:
+                self.playerBulList.remove(bulA)
+                self.playerShot = False
+                
+    def oppBulletTracker(self):
+        for bulZ in self.oppBulList: #opponent's bullets that are shooting
+            self.oppBulPosX = bulZ.x
+            self.oppBulPosY = bulZ.y
+            bulZ.x += bulZ.vel
+            if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False: #normal hit
+                print('aang hit')
+                self.mainHealthBar.bulCount += 1 #detects gameOver
+                self.oppBulList.remove(bulZ)
+                self.oppShot = False
+                if bulZ.rad > 50:
+                    self.mainHealthBar.score += 40
+                    self.playerCharge = 0
+                else:
+                    self.playerScoreIncr = self.mainHealthBar.score
+                    self.mainHealthBar.score += 10
+                    self.playerCharge -= 1
+            if bulZ.x < 0 or bulZ.x > self.width:
+                self.oppBulList.remove(bulZ)
+                self.oppShot = False
+    
+            if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == True: #deflected off aang
+                print('deflected')
+                bulZ.vel *= -1.5
+            elif (self.opponent.hitbox[0]< bulZ.x): #deflected and opponent
+                print('alskdfj')
+                self.oppBulList.remove(bulZ)
+                if bulZ.rad > 50:
+                    self.oppHealthBar.score += 40
+                    self.oppCharge = 0
+                else:
+                    self.oppScoreIncr = self.oppHealthBar.score
+                    self.oppHealthBar.score += 10   
+                    self.oppCharge -= 1
+                self.oppHealthBar.bulCount += 1 #detects gameOver
+                self.oppShot = False
         
+        if self.player.isJump:
+            if self.player.jumpCount >= -10:
+                neg = 1.5 #start moving up 
+                if self.player.jumpCount < 0:
+                    neg = -1.5 # moving down in the parabola
+                #makes a quadratic parabola to illustrate diff speeds
+                #0.5 scales the jump smaller 
+                self.player.posY -= (0.5 * (self.player.jumpCount ** 2) * neg)
+                self.player.jumpCount -= 1 #change heights
+            else:
+                self.player.isJump = False
+                self.player.jumpCount = 10
+                
+        if self.opponent.isJump: #when jumping
+            if self.opponent.jumpCount >= -10: 
+                neg = 1.5 #start moving up 
+                if self.opponent.jumpCount < 0:
+                    neg = -1.5 # moving down in the parabola
+                #makes a quadratic parabola to illustrate diff speeds
+                #0.5 scales the jump smaller 
+                self.opponent.posY -= (0.5 * (self.opponent.jumpCount ** 2) * neg)
+                self.opponent.jumpCount -= 1 #change heights
+            else:
+                self.opponent.isJump = False
+                self.opponent.jumpCount = 10
+               
+
+    
+    def timerFired(self):        
+        self.timeBar.tBTime += 8 #timer bar moves
+        self.time += 0.5
+        if self.timeBar.width + self.timeBar.tBTime == self.width: #at the end
+            self.timeBar.tBTime = 0
+            self.move = True
+            self.playerChoosing = False
+            self.plzSHOOT = True
+        else:
+            self.move = False
+            self.plzSHOOT = False
+        if self.timeBar.width + self.timeBar.tBTime < self.width - 5:
+            self.playerChoosing = True
+        else:
+            self.playerChoosing = False
+        
+        #tracking bullets
+        self.playerBulletTracker()
+        self.oppBulletTracker()
+                    
+        if self.mainHealthBar.bulCount == 20 or self.oppHealthBar.bulCount == 20:
+            self.state = "endMode"
+
+        ### Executing Player Moves
+        if self.plzSHOOT == True:
+            if self.playerMove == "shoot" and self.playerCharge >= 1:
+                self.playerCharge -= 1
+                self.player.bulletCount += 1
+                self.playerShot = True
+                self.player.bulletCount = 1
+                self.playerBulList.append(Bullet(self.screen, self.player.posX, self.player.posY, self.player.airball, self.player.dir, 50))
+
+            if self.playerMove == "mirror" and self.playerCharge >= 1:
+                self.playerMirrored = True
+                self.player.color = (255,255,255)
+                self.playerCharge -= 1
+                
+            if self.playerCharge < 1 and (self.playerMove == "mirror" or self.playerMove == "shoot"):
+                self.playerMove = "charge"
+                self.playerNotEnough = True
+            
+            if self.playerMove == "bigBomb":
+                self.playerBulList.append(Bullet(self.screen, self.player.posX, self.player.posY, self.player.airball, self.player.dir, 50))
+                self.playerShot = True
+                
+            if self.playerMove == "jump":
+                self.player.isJump = True
+                self.player.standing = True
+            
+            if self.playerMove == "charge":
+                self.playerCharge += 1
+        if self.playerCharge >= 1: #resets "notEnough"
+            self.playerNotEnough = False
+        if self.playerMove != "mirror": #resets color
+            self.player.color = (255,165,0)
+            self.playerMirrored = False
+        
+        ## Tracking Player Moves AI
+        #create a queuing system that prepares the most likely attack
+        if self.plzSHOOT == True:
+           self.playerMoveTracker.append(self.playerMove)
+        print(self.playerMoveTracker)
+        
+        # patternRecog = 0
+        # bestMove = "nothing"
+        # first = "nothing"
+        # second = "nothing"
+        # for i in range(len(self.playerMoveTracker)):
+        #     if self.playerMoveTracker[i] =
+        
+        ## Recommended Moves
+        # dictComboCount = {}
+        # for curMove in self.playerMoveTracker:
+        #     dictComboCount[curMove] = dictComboCount.get(curMove, 0) + 1
+        # # print(dictComboCount)
+        # mostProbMove = []
+        # best = 0
+        # for move in dictComboCount:
+        #     count = dictComboCount[move]
+        #     if count > best:
+        #         best = count
+        #         mostProbMove.append(move)
+        # print(mostProbMove)
+        jumpAI = "jump"
+        mirrorAI  = "mirror"
+        chargeAI = "charge"
+        shootAI = "shoot"
+        bigFireAI = "bigboi"
+        AIReaction = "nothing" #doesnt do anythn
+        recommendedMove = []
+        # for playerCurMove in self.playerMoveTracker: #optimal defense moves
+        #     if playerCurMove == "charge":
+        #         recommendedMove.append(jumpAI)
+        #         AIReaction = shootAI
+        #     elif playerCurMove == "shoot":
+        #         recommendedMove.append(jumpAI)
+        #         AIReaction = mirrorAI
+        #     elif playerCurMove == "mirror":
+        #         recommendedMove.append(shootAI)
+        #         AIReaction = shootAI
+        #     elif playerCurMove == "jump":
+        #         recommendedMove.append(chargeAI)
+        #         AIReaction = chargeAI
+
+        #evaluate player's current charge
+        if self.playerCharge < 2: #if player is low on charge, they'll prob recharge
+            self.oppMove = shootAI #you should shoot, cuz they'll prob recharge
+        
+        # print(recommendedMove)
+        # if len(recommendedMove) <= 5: #randomMove
+        #     print('rando')
+        #     self.oppMove = random.choice([jumpAI, mirrorAI, shootAI, chargeAI])
+        # else:
+        #     for j in recommendedMove:
+        #         self.oppMove = j
+        #         recommendedMove.remove(j)
+        # 
+        
+        if self.plzSHOOT == True:
+            self.i += 1
+            
+        for self.i in range(len(self.playerMoveTracker)):
+            playerMove = self.playerMoveTracker[self.i]
+            tupMove = (self.oppMove, playerMove)
+            # if tupMove not in self.rewardDict:
+            #     self.rewardDict[tupMove] = 0
+            if self.playerScoreIncr + 10 == self.mainHealthBar.score: #tells AI that the move worked, so do it again
+                self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) + 1
+            elif self.oppScoreIncr + 10 == self.oppHealthBar.score: #FIX: change the situation 
+                self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) - 1
+        
+        # self.oppMove = self.bestMoveAI(self.rewardDict)
+        # if self.oppMove ==  and self.isLegalMoveAI:
+        #     self.oppMove  = bestTup
+        # for tups in self.rewardDict:
+        #     print(self.rewardDict[tups])
+        print(self.rewardDict)
+        ## Executing opponent AI
+        if self.move == True: 
+            if self.oppMove != mirrorAI:
+                self.opponent.color = (255,165,0)
+                self.opponentMirrored = False
+            if self.oppCharge <= 0: #recharges so doesn't enter very negative
+                self.oppMove = chargeAI
+                self.oppCharge += 1
+            # if self.oppMove != shootAI or self.oppMove != bigFireAI:
+            #     self.oppShot = False
+            else:
+                if self.oppMove == jumpAI: #free
+                    self.opponent.isJump = True
+                elif self.oppMove == mirrorAI and self.oppCharge >= 1: #mirror cost 1
+                    self.opponent.color = mirrorAI
+                    self.opponentMirrored = True
+                    self.oppCharge -= 1
+                elif self.oppMove == chargeAI: #free
+                    self.oppCharge += 1
+                    return self.oppMove
+                elif self.oppMove == shootAI and self.oppCharge >= 1: #shooting cost 1
+                    self.oppBulList.append(Bullet(self.screen, self.opponent.posX, self.opponent.posY, self.opponent.fireball, self.opponent.dir, 50))
+                    self.oppShot = True
+                    self.oppCharge -= 1
+                    
+                elif self.oppCharge == 5: #bigFire cost 5
+                    self.oppBulList.append(Bullet(self.screen, self.opponent.posX, self.opponent.posY, self.opponent.fireball, self.opponent.dir, 100))
+                    self.oppMove = bigFireAI
+                    self.oppShot = True
+
+                #reset player moves too
+                self.opponent.color = (255,165,0)
+                self.opponentMirrored = False
+                self.oppShot = False
+        if self.playerShot == True and self.oppMove == "shoot":
+            if self.bulletSpeed > 5:
+                if (self.playerBulPosX + 50 >= self.opponent.posX) and self.playerBulPosX < self.opponent.posX and self.playerBulPosY >= self.opponent.posY:
+                    self.opponent.isJump = True
+                else:
+                    if (self.playerBulPosX + 20 >= self.opponent.posX) and self.playerBulPosX < self.opponent.posX:
+                        self.opponent.isJump = True
+    
+        if self.oppShot == True and self.playerMove == "shoot": #jump dodge
+            if self.bulletSpeed > 5:
+                if (self.playerBulPosX + 50 >= self.player.posX) and self.playerBulPosX < self.player.posX and self.playerBulPosY >= self.player.posY:
+                    self.player.isJump = True
+                else:
+                    if (self.playerBulPosX + 20 >= self.player.posX) and self.playerBulPosX < self.player.posX:
+                        self.player.isJump = True
     def cleanup(self):
        print('cleaning up Menu state stuff')
     def startup(self):
@@ -676,6 +970,9 @@ class Menu(States):
                    
                 if event.key == pygame.K_s:
                     self.oppBulList.append(Bullet(self.screen, self.opponent.posX, self.opponent.posY, self.opponent.fireball, self.opponent.dir, 50))
+                    self.oppShot = True
+                else:
+                    self.oppShot = False
                     
                 if event.key == pygame.K_a and  self.opponent.posX > 0:
                     self.opponent.posX -= self.opponent.vel
@@ -690,6 +987,7 @@ class Menu(States):
                     self.opponent.standing = False
                 else:
                     self.opponent.standing = True
+                    
             
                 if not(self.opponent.isJump): #doesn't allow you to move up/down if jumping or jump again if jumping
                     if event.key == pygame.K_w and self.opponent.posX > 0 and self.opponent.posX <= self.width - self.opponent.spriteSize:
@@ -697,245 +995,6 @@ class Menu(States):
                         self.opponent.standing = True
                 if event.key == pygame.K_r:
                     self.state = "startMode"
-
-    
-    def timerFired(self):        
-        self.timeBar.tBTime += 8 #timer bar moves
-        self.time += 0.5
-        if self.timeBar.width + self.timeBar.tBTime == self.width: #at the end
-            self.timeBar.tBTime = 0
-            self.move = True
-            self.playerChoosing = False
-            self.plzSHOOT = True
-        else:
-            self.move = False
-            self.plzSHOOT = False
-        if self.timeBar.width + self.timeBar.tBTime < self.width - 5:
-            self.playerChoosing = True
-        else:
-            self.playerChoosing = False
-        
-        
-        ##Bullet Tracker
-        for bulA in self.playerBulList: #detects if player is shot at
-            bulA.x += bulA.vel
-            print(self.playerBulPosX)
-            self.playerBulPosX = bulA.x
-            self.playerBulPosY = bulA.y
-            self.bulletSpeed = bulA.vel
-            if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y) and self.opponentMirrored == False: #normally hit
-                print('hit')
-                self.oppHealthBar.bulCount += 1
-                self.playerBulList.remove(bulA)
-                self.playerShot = False
-                if bulA.rad > 50:
-                    self.oppHealthBar.score += 40
-                    self.oppCharge = 0
-                else:
-                    self.oppHealthBar.score += 10
-                    self.oppCharge -= 1
-            if (self.opponent.hitbox[0]< bulA.x and (self.opponent.hitbox[0] + 70) > bulA.x) and (self.opponent.hitbox[1] < bulA.y and (self.opponent.hitbox[1] + 70) > bulA.y) and self.opponentMirrored == True: #mirrored
-                bulA.vel *= -1
-            if bulA.x > self.width or bulA.x < 0:
-                self.playerBulList.remove(bulA)
-                self.playerShot = False
-                
-        for bulZ in self.oppBulList: #opponent's bullets that are shooting
-            self.oppBulPosX = bulZ.x
-            self.oppBulPosY = bulZ.y
-            bulZ.x += bulZ.vel
-            if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == False: #normal hit
-                print('aang hit')
-                self.mainHealthBar.bulCount += 1 #detects gameOver
-                self.oppBulList.remove(bulZ)
-                if bulZ.rad > 50:
-                    self.mainHealthBar.score += 40
-                    self.playerCharge = 0
-                else:
-                    self.playerScoreIncr = self.mainHealthBar.score
-                    self.mainHealthBar.score += 10
-                    self.playerCharge -= 1
-            if bulZ.x < 0 or bulZ.x > self.width:
-                self.oppBulList.remove(bulZ)
-            if (self.player.hitbox[0]< bulZ.x and (self.player.hitbox[0] + 70) > bulZ.x) and (self.player.hitbox[1] < bulZ.y and (self.player.hitbox[1] + 70) > bulZ.y) and self.playerMirrored == True: #deflected off aang
-                print('deflected')
-                bulZ.vel *= -1.5
-            elif (self.opponent.hitbox[0]< bulZ.x): #deflected and opponent
-                print('alskdfj')
-                self.oppBulList.remove(bulZ)
-                if bulZ.rad > 50:
-                    self.oppHealthBar.score += 40
-                    self.oppCharge = 0
-                else:
-                    self.oppScoreIncr = self.oppHealthBar.score
-                    self.oppHealthBar.score += 10   
-                    self.oppCharge -= 1
-                self.oppHealthBar.bulCount += 1 #detects gameOver
-                self.oppShot = False
-           
-        if self.player.isJump:
-            if self.player.jumpCount >= -10:
-                neg = 1.5 #start moving up 
-                if self.player.jumpCount < 0:
-                    neg = -1.5 # moving down in the parabola
-                #makes a quadratic parabola to illustrate diff speeds
-                #0.5 scales the jump smaller 
-                self.player.posY -= (0.5 * (self.player.jumpCount ** 2) * neg)
-                self.player.jumpCount -= 1 #change heights
-            else:
-                self.player.isJump = False
-                self.player.jumpCount = 10
-                
-        if self.opponent.isJump: #when jumping
-            if self.opponent.jumpCount >= -10: 
-                neg = 1.5 #start moving up 
-                if self.opponent.jumpCount < 0:
-                    neg = -1.5 # moving down in the parabola
-                #makes a quadratic parabola to illustrate diff speeds
-                #0.5 scales the jump smaller 
-                self.opponent.posY -= (0.5 * (self.opponent.jumpCount ** 2) * neg)
-                self.opponent.jumpCount -= 1 #change heights
-            else:
-                self.opponent.isJump = False
-                self.opponent.jumpCount = 10
-            
-                    
-        if self.mainHealthBar.bulCount == 10 or self.oppHealthBar.bulCount == 10:
-            self.state = "endMode"
-
-        ### Executing Player Moves
-        if self.plzSHOOT == True:
-            if self.playerMove == "shoot" and self.playerCharge >= 1:
-                self.playerCharge -= 1
-                self.player.bulletCount += 1
-                self.playerShot = True
-                self.player.bulletCount = 1
-                self.playerBulList.append(Bullet(self.screen, self.player.posX, self.player.posY, self.player.airball, self.player.dir, 50))
-
-            if self.playerMove == "mirror" and self.playerCharge >= 1:
-                self.playerMirrored = True
-                self.player.color = (255,255,255)
-                self.playerCharge -= 1
-                
-            if self.playerCharge < 1 and (self.playerMove == "mirror" or self.playerMove == "shoot"):
-                self.playerMove = "charge"
-                self.playerNotEnough = True
-            
-            if self.playerMove == "bigBomb":
-                self.playerBulList.append(Bullet(self.screen, self.player.posX, self.player.posY, self.player.airball, self.player.dir, 50))
-            
-            if self.playerMove == "jump":
-                self.player.isJump = True
-                self.player.standing = True
-            
-            if self.playerMove == "charge":
-                self.playerCharge += 1
-        if self.playerCharge >= 1: #resets "notEnough"
-            self.playerNotEnough = False
-        if self.playerMove != "mirror": #resets color
-            self.player.color = (255,165,0)
-            self.playerMirrored = False
-        
-        ## Tracking Player Moves AI
-        #create a queuing system that prepares the most likely attack
-        if self.plzSHOOT == True:
-           self.playerMoveTracker.append(self.playerMove)
-        # print(self.playerMoveTracker)
-        
-        # patternRecog = 0
-        # bestMove = "nothing"
-        # first = "nothing"
-        # second = "nothing"
-        # for i in range(len(self.playerMoveTracker)):
-        #     if self.playerMoveTracker[i] =
-        
-        ## Recommended Moves
-        dictComboCount = {}
-        for curMove in self.playerMoveTracker:
-            dictComboCount[curMove] = dictComboCount.get(curMove, 0) + 1
-        # print(dictComboCount)
-        recommendedMove = []
-        mostProbMove = []
-        best = 0
-        for move in dictComboCount:
-            count = dictComboCount[move]
-            if count > best:
-                best = count
-                mostProbMove.append(move)
-        # print(mostProbMove)
-        jumpAI = "jump"
-        mirrorAI  = "mirror"
-        chargeAI = "charge"
-        shootAI = "shoot"
-        bigFireAI = "bigboi"
-        for playerCurMove in self.playerMoveTracker: #optimal defense moves
-            if playerCurMove == "charge":
-                recommendedMove.append(chargeAI)
-            elif playerCurMove == "shoot":
-                recommendedMove.append(mirrorAI)
-            elif playerCurMove == "mirror":
-                recommendedMove.append(shootAI)
-            elif playerCurMove == "jump":
-                recommendedMove.append(shootAI)
-        print(recommendedMove)
-        if len(recommendedMove) <= 5: #randomMove
-            print('rando')
-            self.oppMove = random.choice([jumpAI, mirrorAI, shootAI, chargeAI])
-        else:
-            for j in recommendedMove:
-                self.oppMove = j
-                recommendedMove.remove(j)
-        # print(self.oppMove)
-        rewardDict = {}
-        if self.playerScoreIncr + 10 == self.mainHealthBar.score: #tells AI that the move worked, so do it again
-            rewardDict[self.oppMove] = rewardDict.get(self.oppMove, 0) + 1
-        if self.oppScoreIncr + 10 == self.oppHealthBar.score: #FIX: change the situation 
-            rewardDict[self.oppMove] = rewardDict.get(self.oppMove, 0) - 1
-        
-        ## Executing opponent AI
-        if self.move == True: 
-            if self.oppMove != mirrorAI:
-                self.opponent.color = (255,165,0)
-                self.opponentMirrored = False
-            if self.oppCharge <= 0: #fix AI
-                self.oppMove = chargeAI
-                self.oppCharge += 1
-            else:
-                if self.oppMove == jumpAI: #free
-                    self.opponent.isJump = True
-                elif self.oppMove == mirrorAI and self.oppCharge >= 1: #mirror cost 1
-                    self.opponent.color = mirrorAI
-                    self.opponentMirrored = True
-                    self.oppCharge -= 1
-                elif self.oppMove == chargeAI: #free
-                    self.oppCharge += 1
-                    return self.oppMove
-                elif self.oppMove == shootAI and self.oppCharge >= 1: #shooting cost 1
-                    self.oppBulList.append(Bullet(self.screen, self.opponent.posX, self.opponent.posY, self.opponent.fireball, self.opponent.dir, 50))
-                    self.oppCharge -= 1
-                elif self.oppCharge == 5: #bigFire cost 5
-                    self.oppBulList.append(Bullet(self.screen, self.opponent.posX, self.opponent.posY, self.opponent.fireball, self.opponent.dir, 100))
-                    self.oppMove = bigFireAI
-                #reset player moves too
-                self.opponent.color = (255,165,0)
-                self.opponentMirrored = False
-        
-        if self.playerShot == True and self.oppMove == "shoot":
-            print('hi')
-            if self.bulletSpeed > 5:
-                if (self.playerBulPosX + 50 >= self.opponent.posX) and self.playerBulPosX < self.opponent.posX and self.playerBulPosY >= self.opponent.posY:
-                    self.opponent.isJump = True
-                else:
-                    if (self.playerBulPosX + 20 >= self.opponent.posX) and self.playerBulPosX < self.opponent.posX:
-                        self.opponent.isJump = True
-    
-        if self.oppShot == True and self.playerMove == "shoot": #jump dodge
-            if self.bulletSpeed > 5:
-                if (self.playerBulPosX + 50 >= self.player.posX) and self.playerBulPosX < self.palyer.posX and self.playerBulPosY >= self.player.posY:
-                    self.player.isJump = True
-                else:
-                    if (self.playerBulPosX + 20 >= self.player.posX) and self.playerBulPosX < self.player.posX:
-                        self.player.isJump = True
 
     def update(self, screen, dt):
         self.draw(screen)
@@ -999,6 +1058,7 @@ class Menu(States):
             if self.oppShot:
                 self.screen.blit(self.opponent.fireShield, (self.width*3//4, self.height//2))
                 print('FIRE')
+                
             if self.playerShot:
                 self.screen.blit(self.player.airShield, (self.width//6, self.height//4))
                 print('AIR')
@@ -1007,7 +1067,7 @@ class Menu(States):
                 bulZ.draw(self.screen)
             for bulA in self.oppBulList:
                 bulA.draw(self.screen)   
-                                
+            print("oppShot", self.oppShot)
             self.player.draw()
             self.opponent.draw()
             self.timeBar.draw(self.screen)
