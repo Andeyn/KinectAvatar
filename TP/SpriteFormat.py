@@ -465,7 +465,7 @@ class chargeBar(object):
         pygame.draw.rect(win, self.color, (self.x , self.y, self.width + self.tBTime, self.height))
         
 class Bullet(object):
-    def __init__(self, win, x, y, image, direction, rad):
+    def __init__(self, win, x, y, image, direction,      rad):
         self.x = x
         self.y = y
         self.dir = direction #which way the bullet shoots
