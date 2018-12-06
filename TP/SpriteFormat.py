@@ -586,7 +586,7 @@ class Menu(States):
         self.rewardDict = {}
         self.playerMoveCount = {}
 
-    def isLegalMoveAI(self):
+    def isLegalMoveAI(self, move):
         if self.oppMove == "shoot" and self.oppCharge < 1:
             return False
         elif self.oppMove == "mirror" and self.oppCharge < 1:
@@ -784,19 +784,19 @@ class Menu(States):
         bigFireAI = "bigboi"
         AIReaction = "nothing" #doesnt do anythn
         recommendedMove = []
-        # for playerCurMove in self.playerMoveTracker: #optimal defense moves
-        #     if playerCurMove == "charge":
-        #         recommendedMove.append(jumpAI)
-        #         AIReaction = shootAI
-        #     elif playerCurMove == "shoot":
-        #         recommendedMove.append(jumpAI)
-        #         AIReaction = mirrorAI
-        #     elif playerCurMove == "mirror":
-        #         recommendedMove.append(shootAI)
-        #         AIReaction = shootAI
-        #     elif playerCurMove == "jump":
-        #         recommendedMove.append(chargeAI)
-        #         AIReaction = chargeAI
+        for playerCurMove in self.playerMoveTracker: #optimal defense moves
+            if playerCurMove == "charge":
+                recommendedMove.append(jumpAI)
+                AIReaction = shootAI
+            elif playerCurMove == "shoot":
+                recommendedMove.append(jumpAI)
+                AIReaction = mirrorAI
+            elif playerCurMove == "mirror":
+                recommendedMove.append(shootAI)
+                AIReaction = shootAI
+            elif playerCurMove == "jump":
+                recommendedMove.append(chargeAI)
+                AIReaction = chargeAI
 
         #evaluate player's current charge
         if self.playerCharge < 2: #if player is low on charge, they'll prob recharge
@@ -807,26 +807,29 @@ class Menu(States):
             print('rando')
             self.oppMove = random.choice([jumpAI, mirrorAI, shootAI, chargeAI])
         else:
-            for j in recommendedMove:
-                self.oppMove = j
-                recommendedMove.remove(j)
+        #backtracking if not legal
+            self.oppMove = self.bestMoveAI(self.rewardDict)
+            if self.isLegalMoveAI(self.oppMove):
+                self.oppMove = self.bestMoveAI(self.rewardDict)
+            else:
+                for move in recommendedMove:
+                    self.oppMove = move
+                    recommendedMove.remove(move)
        
-#       #       
-        # for self.i in range(len(self.playerMoveTracker)):
-        #     if self.timer % 1 == 0:
-        #         playerMove = self.playerMoveTracker[self.i]
-        #         tupMove = (self.oppMove, playerMove)
-        #         if self.playerScoreIncr + 10 == self.mainHealthBar.score: #tells AI that the move worked, so do it again
-        #             self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) + 1
-        #         elif self.oppScoreIncr + 10 == self.oppHealthBar.score: #FIX: change the situation 
-        #             self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) - 1
+            
+        for self.i in range(len(self.playerMoveTracker)):
+            if self.timer % 1 == 0:
+                playerMove = self.playerMoveTracker[self.i]
+                tupMove = (self.oppMove, playerMove)
+                if self.playerScoreIncr + 10 == self.mainHealthBar.score: #tells AI that the move worked, so do it again
+                    self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) + 1
+                elif self.oppScoreIncr + 10 == self.oppHealthBar.score: #FIX: change the situation 
+                    self.rewardDict[tupMove] = self.rewardDict.get(tupMove, 0) - 1
         
-        # self.oppMove = self.bestMoveAI(self.rewardDict)
-        # if self.oppMove ==  and self.isLegalMoveAI:
-        #     self.oppMove  = bestTup
-        # for tups in self.rewardDict:
-        #     print(self.rewardDict[tups])
-        # print(self.rewardDict)
+                
+        for tups in self.rewardDict:
+            print(self.rewardDict[tups])
+        
         ## Executing opponent AI
         if self.move == True: 
             if self.oppMove != mirrorAI:
