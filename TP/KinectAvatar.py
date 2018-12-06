@@ -816,7 +816,7 @@ class BodyGameRuntime(object):
         self.SpineShoulderX = jointPoints[PyKinectV2.JointType_SpineShoulder].x
         self.SpineShoulderY = jointPoints[PyKinectV2.JointType_SpineShoulder].y
         self.SpineMidY = jointPoints[PyKinectV2.JointType_SpineMid].y
-        self.airball = pygame.image.load('images/airballs.png')
+        self.airball = pygame.image.load('images/AirShield.png')
         self.airball = pygame.transform.scale(self.airball, (500, 500))
         
         # box = (self.SpineShoulderX + 10, self.SpineShoulderY, self.shoulderRX - self.SpineShoulderX, self.SpineMidY)
@@ -1131,38 +1131,35 @@ class BodyGameRuntime(object):
             ## Execute Player Moves
         
                         
-                #opponent moves
-                # if self.opponent.rightPlayerWalk == True: 
-                #     self.opponent.dir = 1
-                # else:
-                if self.oppShot == True:
-                    self.opponent.rightPlayerWalk = True
-                   
-                # 
-                if event.key == pygame.K_s:
-                    self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
-                    
-                if event.key == pygame.K_a and  self.opponent.posX > 0:
-                    self.opponent.posX -= self.opponent.vel
-                    self.opponent.leftPlayerWalk = True
-                    self.opponent.rightPlayerWalk = False
-                    self.opponent.standing = False
-                    
-                if event.key == pygame.K_d and self.opponent.posX < self.width - self.opponent.spriteSize:
-                    self.opponent.posX += self.opponent.vel   
-                    self.opponent.leftPlayerWalk = False
-                    self.opponent.rightPlayerWalk = True
-                    self.opponent.standing = False
-                else:
+                
+            if self.oppShot == True:
+                self.opponent.rightPlayerWalk = True
+                
+            # 
+            if event.key == pygame.K_s:
+                self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
+                
+            if event.key == pygame.K_a and  self.opponent.posX > 0:
+                self.opponent.posX -= self.opponent.vel
+                self.opponent.leftPlayerWalk = True
+                self.opponent.rightPlayerWalk = False
+                self.opponent.standing = False
+                
+            if event.key == pygame.K_d and self.opponent.posX < self.width - self.opponent.spriteSize:
+                self.opponent.posX += self.opponent.vel   
+                self.opponent.leftPlayerWalk = False
+                self.opponent.rightPlayerWalk = True
+                self.opponent.standing = False
+            else:
+                self.opponent.standing = True
+        
+            if not(self.opponent.isJump): #doesn't allow you to move up/down if jumping or jump again if jumping
+                if event.key == pygame.K_w and self.opponent.posX > 0 and self.opponent.posX <= self.width - self.opponent.spriteSize:
+                    self.opponent.isJump = True
                     self.opponent.standing = True
-            
-                if not(self.opponent.isJump): #doesn't allow you to move up/down if jumping or jump again if jumping
-                    if event.key == pygame.K_w and self.opponent.posX > 0 and self.opponent.posX <= self.width - self.opponent.spriteSize:
-                        self.opponent.isJump = True
-                        self.opponent.standing = True
-                if event.key == pygame.K_r:
-                    self.state = "startMode"
-                    
+            if event.key == pygame.K_r:
+                self.state = "startMode"
+                
                     
                     
                     
@@ -1172,7 +1169,7 @@ class BodyGameRuntime(object):
                     self.player.bulletCount += 1
                     self.playerShot = True
                     self.player.bulletCount = 1
-                    self.playerBulList.append(Bullet(self.player.posX, self.player.posY, 8, (0,0,0), self.player.dir))
+                    self.playerBulList.append(Bullet(self.screen, self.player.posX, self.player.posY, self.player.airball, self.player.dir, 50))
     
                 if self.playerMove == "mirror" and self.playerCharge >= 1:
                     self.playerMirrored = True
@@ -1184,19 +1181,20 @@ class BodyGameRuntime(object):
                     self.playerNotEnough = True
                 
                 if self.playerMove == "bigBomb":
-                    self.playerBulList.append(Bullet(self.player.posX, self.player.posY, 60, (0,0,0), self.player.dir))
-                
+                    self.playerBulList.append(Bullet(self.screen, self.player.posX, self.player.posY, self.player.airball, self.player.dir, 50))
+                    self.playerShot = True
+                    
                 if self.playerMove == "jump":
                     self.player.isJump = True
                     self.player.standing = True
                 
                 if self.playerMove == "charge":
                     self.playerCharge += 1
-                if self.playerCharge >= 1: #resets "notEnough"
-                    self.playerNotEnough = False
-                if self.playerMove != "mirror": #resets color
-                    self.player.color = (255,165,0)
-                    self.playerMirrored = False
+            if self.playerCharge >= 1: #resets "notEnough"
+                self.playerNotEnough = False
+            if self.playerMove != "mirror": #resets color
+                self.player.color = (255,165,0)
+                self.playerMirrored = False
                 ## Tracking AI
                 if self.plzSHOOT == True:
                     self.playerMoveTracker.append(self.playerMove)
@@ -1237,32 +1235,54 @@ class BodyGameRuntime(object):
             # print(self.oppMove)
     
             ## Executing opponent AI
-            if self.move == True: 
-                if self.oppMove != mirrorAI:
-                    self.opponent.color = (255,165,0)
-                    self.opponentMirrored = False
-                if self.oppCharge <= 0: #fix AI
-                    self.oppMove = chargeAI
+        if self.move == True: 
+            if self.oppMove != mirrorAI:
+                self.opponent.color = (255,165,0)
+                self.opponentMirrored = False
+            if self.oppCharge <= 0: #recharges so doesn't enter very negative
+                self.oppMove = chargeAI
+                self.oppCharge += 1
+            # if self.oppMove != shootAI or self.oppMove != bigFireAI:
+            #     self.oppShot = False
+            else:
+                if self.oppMove == jumpAI: #free
+                    self.opponent.isJump = True
+                elif self.oppMove == mirrorAI and self.oppCharge >= 1: #mirror cost 1
+                    self.opponent.color = mirrorAI
+                    self.opponentMirrored = True
+                    self.oppCharge -= 1
+                elif self.oppMove == chargeAI: #free
                     self.oppCharge += 1
+                    return self.oppMove
+                elif self.oppMove == shootAI and self.oppCharge >= 1: #shooting cost 1
+                    self.oppBulList.append(Bullet(self.screen, self.opponent.posX, self.opponent.posY, self.opponent.fireball, self.opponent.dir, 50))
+                    self.oppShot = True
+                    self.oppCharge -= 1
+                    
+                elif self.oppCharge == 5: #bigFire cost 5
+                    self.oppBulList.append(Bullet(self.screen, self.opponent.posX, self.opponent.posY, self.opponent.fireball, self.opponent.dir, 100))
+                    self.oppMove = bigFireAI
+                    self.oppShot = True
                 else:
-                    if self.oppMove == jumpAI: #free
-                        self.opponent.isJump = True
-                    elif self.oppMove == mirrorAI and self.oppCharge >= 1: #mirror cost 1
-                        self.opponent.color = mirrorAI
-                        self.opponentMirrored = True
-                        self.oppCharge -= 1
-                    elif self.oppMove == chargeAI: #free
-                        self.oppCharge += 1
-                        return self.oppMove
-                    elif self.oppMove == shootAI and self.oppCharge >= 1: #shooting cost 1
-                        self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 8, (0,0,0), self.opponent.dir))
-                        self.oppCharge -= 1
-                    elif self.oppCharge == 5: #bigFire cost 5
-                        self.oppBulList.append(Bullet(self.opponent.posX, self.opponent.posY, 60, (0,0,0), self.opponent.dir))
-                        self.oppMove = bigFireAI
-                    #reset player moves too
+                #reset player moves too
                     self.opponent.color = (255,165,0)
                     self.opponentMirrored = False
+                    self.oppShot = False
+        if self.playerShot == True and self.oppMove == "shoot":
+            if self.bulletSpeed > 5:
+                if (self.playerBulPosX + 50 >= self.opponent.posX) and self.playerBulPosX < self.opponent.posX and self.playerBulPosY >= self.opponent.posY:
+                    self.opponent.isJump = True
+                else:
+                    if (self.playerBulPosX + 20 >= self.opponent.posX) and self.playerBulPosX < self.opponent.posX:
+                        self.opponent.isJump = True
+    
+        if self.oppShot == True and self.playerMove == "shoot": #jump dodge
+            if self.bulletSpeed > 5:
+                if (self.playerBulPosX + 50 >= self.player.posX) and self.playerBulPosX < self.player.posX and self.playerBulPosY >= self.player.posY:
+                    self.player.isJump = True
+                else:
+                    if (self.playerBulPosX + 20 >= self.player.posX) and self.playerBulPosX < self.player.posX:
+                        self.player.isJump = True
             
         
             if self.playerShot == True and self.oppMove == "shoot":
