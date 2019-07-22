@@ -12,6 +12,7 @@ To play, you will need to install PyKinect2, the Kinect SDK, a Microsoft Kinect 
 Game Controls:
 
 •	Charge = Free (Hands together)
+
     •	 Serves as ammunition. If the player wants to shoot or mirror aka play offensive, they must charge. 
     •	Charging is a vulnerable state, as the player has the risk of being shot at, but also has the potential to shoot later.
     
