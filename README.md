@@ -1,4 +1,4 @@
-# KinectAvatar
+The Last Airbender: Kinect ShowDown
 112 Term Project
 To access the code, go into the "TP" folder.
 
