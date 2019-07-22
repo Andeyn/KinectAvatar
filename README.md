@@ -1,6 +1,10 @@
 The Last Airbender: Kinect ShowDown
-112 Term Project
+15-112 Term Project
 To access the code, go into the "TP" folder.
+
+For a quick summary of this project, please watch this video!
+https://youtu.be/E0UotTonjuQ
+
 
 This game is called "The Last Airbender: Kinect ShowDown". 
 This is essentially a “Streetfighter” fighting game of The Last Airbender that the user can play/control the character with the their hand motions through the Kinect against an AI.
